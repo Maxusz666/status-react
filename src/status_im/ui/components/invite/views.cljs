@@ -55,17 +55,16 @@
      number]]
    [rn/view {:padding-left (:base spacing/spacing)
              :flex         1}
-    [quo/text {}
-     description]]])
+    [quo/text (i18n/label description)]]])
 
 (def steps-values [{:number      1
-                    :description "You send a unique invite link to your friend to download and join Status"}
+                    :description :t/invite-instruction-first}
                    {:number      2
-                    :description "Your friend downloads Status and creates an account"}
+                    :description :t/invite-instruction-second}
                    {:number      3
-                    :description "Your friend buys a Starter Pack on any Android device. Sorry, no iOS!"}
+                    :description :t/invite-instruction-third}
                    {:number      4
-                    :description "You receive your referral bonus"}])
+                    :description :t/invite-instruction-fourth}])
 
 (defn referral-steps []
   [rn/view {:style (merge
@@ -76,7 +75,7 @@
    [rn/view {:style {:padding-top    (:small spacing/spacing)
                      :padding-bottom (:x-tiny spacing/spacing)}}
     [quo/text {:color :secondary}
-     "How it works"]]
+     (i18n/label :t/invite-instruction)]]
    [rn/view {:flex 1}
     (for [s steps-values]
       [step s])]])
@@ -88,7 +87,7 @@
        [rn/view {:style (merge (:base spacing/padding-horizontal)
                                (:x-tiny spacing/padding-vertical))}
         [quo/text {:color :secondary}
-         "Account to receive your referral bonus"]]
+         (i18n/label :t/invite-receive-account)]]
        [rn/modal {:visible     @visible
                   :transparent true}
         [bottom-sheet/bottom-sheet {:show?     true
@@ -113,7 +112,7 @@
                             :change-account #(reset! account* %)
                             :accounts       accounts}]
          [toolbar/toolbar {:show-border? true
-                           :center       {:label    "Invite"
+                           :center       {:label    (i18n/label :t/invite-button)
                                           :type     :secondary
                                           :on-press #(re-frame/dispatch [::events/generate-invite
                                                                          {:address (get account :address)}])}}]]))))
