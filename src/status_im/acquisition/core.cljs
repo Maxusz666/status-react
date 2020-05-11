@@ -3,10 +3,7 @@
             [status-im.utils.fx :as fx]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.waku.core :as waku]
-            [taoensso.timbre :as log]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.utils.types :as types]
-            [status-im.utils.build :as build]))
+            [status-im.utils.types :as types]))
 
 (fx/defn handle-error
   {:events [::on-error]}
