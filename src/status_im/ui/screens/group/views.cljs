@@ -5,7 +5,6 @@
             [reagent.core :as reagent]
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.button :as button]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.checkbox.view :as checkbox]
             [status-im.ui.components.colors :as colors]
@@ -14,7 +13,7 @@
              :as
              kb-presentation]
             [status-im.ui.components.list-item.views :as list-item]
-            [status-im.ui.components.list-selection :as list-selection]
+            [status-im.ui.components.invite.views :as invite]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.search-input.view :as search]
@@ -69,11 +68,6 @@
 (defn- group-toggle-participant [allow-new-users? contact]
   [toggle-item allow-new-users? :is-participant-selected? contact on-toggle-participant])
 
-(defn- handle-invite-friends-pressed []
-  (if platform/desktop?
-    (re-frame/dispatch [:navigate-to :new-contact])
-    (list-selection/open-share {:message (i18n/label :t/get-status-at)})))
-
 (defn toggle-list [{:keys [contacts render-fn]}]
   [react/scroll-view {:flex 1}
    (if platform/desktop?
@@ -91,10 +85,7 @@
     {:style (styles/no-contact-text)}
     no-contacts]
    (when-not platform/desktop?
-     [button/button
-      {:type     :secondary
-       :on-press handle-invite-friends-pressed
-       :label    :t/invite-friends}])])
+     [invite/button])])
 
 (defn filter-contacts [filter-text contacts]
   (let [lower-filter-text (string/lower-case (str filter-text))

@@ -63,7 +63,7 @@
       [icons/icon :main-icons/close-circle {:color colors/gray}]]]]
    [react/view {:style {:padding-bottom 8}}
     [react/i18n-text {:style styles/no-chats-text :key :chat-and-transact}]]
-   [invite/invite-button]
+   [invite/button]
    [react/view {:align-items :center :padding-top 8}
     [react/view {:style (styles/hr-wrapper)}]
     [react/i18n-text {:style (styles/or-text) :key :or}]]

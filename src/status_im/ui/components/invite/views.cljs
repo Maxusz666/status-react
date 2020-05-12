@@ -83,6 +83,7 @@
      (i18n/label :t/invite-instruction)]]
    [rn/view {:flex 1}
     (for [s steps-values]
+      ^{:key (str (:number s))}
       [step s])]])
 
 (defn- referral-account []
@@ -127,14 +128,15 @@
         on-press (fn []
                    (reset! visible true)
                    (re-frame/dispatch [::events/get-accounts-reward]))]
-    (fn [{:keys [component]}]
+    (fn [{:keys [component props]}]
       [:<>
        [rn/modal {:visible     @visible
                   :transparent true}
         [bottom-sheet/bottom-sheet {:show?     true
                                     :on-cancel #(reset! visible false)
                                     :content   referral-sheet}]]
-       [component {:on-press on-press}]])))
+       [component {:on-press on-press
+                   :props    props}]])))
 
 (defn- button-component [{:keys [on-press]}]
   (let [amount @(re-frame/subscribe [:invite/default-reward])]
@@ -148,17 +150,19 @@
        [quo/text
         (i18n/label :t/invite-reward {:amount (str amount)})])]]))
 
-(defn- list-item-component [{:keys [on-press]}]
+(defn- list-item-component [{:keys [on-press props]}]
   (let [amount @(re-frame/subscribe [:invite/default-reward])]
     [list-item/list-item
-     {:title               (i18n/label :t/invite-friends)
+     {:theme               :action
+      :title               (i18n/label :t/invite-friends)
       :subtitle            (i18n/label :t/invite-reward {:amount amount})
       :icon                :main-icons/share
-      :accessibility-label :invite-list-item
+      :accessibility-label (:accessibility-label props)
       :on-press            on-press}]))
 
-(defn invite-button []
+(defn button []
   [invite {:component button-component}])
 
-(defn invite-list-item []
-  [invite {:component list-item-component}])
+(defn list-item [props]
+  [invite {:component list-item-component
+           :props     props}])
