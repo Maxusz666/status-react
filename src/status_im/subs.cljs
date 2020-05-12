@@ -2202,3 +2202,20 @@
  :<- [:networks/manage]
  (fn [manage]
    (not-any? :error (vals manage))))
+
+;; Acquisition Referral reward
+(re-frame/reg-sub
+ :invite/default-reward
+ (fn [db]
+   (get-in db [:acquisition :referral :amount])))
+
+(re-frame/reg-sub
+ :invite/accounts-reward
+ (fn [db]
+   (get-in db [:acquisition :accounts])))
+
+(re-frame/reg-sub
+ :invite/account-reward
+ :<- [:invite/accounts-reward]
+ (fn [accounts [_ account]]
+   (get accounts account)))

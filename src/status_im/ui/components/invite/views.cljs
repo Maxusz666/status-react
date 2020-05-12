@@ -15,22 +15,27 @@
             [quo.react-native :as rn]))
 
 ;; Select account sheet
-(defn render-account [current-account change-account]
+(defn- render-account [current-account change-account]
   (fn [account]
-    [list-item/list-item
-     {:theme     :selectable
-      :selected? (= (:address current-account) (:address account))
-      :icon      [chat-icon/custom-icon-view-list (:name account) (:color account)]
-      :title     (:name account)
-      :subtitle  (utils/get-shortened-checksum-address (:address account))
-      :on-press  #(change-account account)}]))
+    (let [{:keys [max-threshold attrib-count]}
+          @(re-frame/subscribe [:invite/account-reward account])]
+     [list-item/list-item
+      {:theme     :selectable
+       :selected? (= (:address current-account) (:address account))
+       :disabled? (and max-threshold attrib-count
+                       (< max-threshold (inc attrib-count)))
+       :icon      [chat-icon/custom-icon-view-list (:name account) (:color account)]
+       :title     (:name account)
+       :subtitle  (utils/get-shortened-checksum-address (:address account))
+       :on-press  #(change-account account)}])))
 
-(defn accounts-list [accounts current-account change-account]
+(defn- accounts-list [accounts current-account change-account]
   (fn []
     [rn/view {:flex 1}
-     [quo/text {:align :center
-                :style {:padding-horizontal 16}}
-      "Select an account to receive your referral bonus"]
+     [rn/view {:style (merge (:base spacing/padding-horizontal)
+                             (:tiny spacing/padding-vertical))}
+      [quo/text {:align :center}
+       (i18n/label :t/invite-select-account)]]
      [rn/flat-list {:data      accounts
                     :key-fn    :address
                     :render-fn (render-account current-account change-account)}]]))
@@ -66,7 +71,7 @@
                    {:number      4
                     :description :t/invite-instruction-fourth}])
 
-(defn referral-steps []
+(defn- referral-steps []
   [rn/view {:style (merge
                     (:tiny spacing/padding-vertical)
                     (:base spacing/padding-horizontal)
@@ -80,7 +85,7 @@
     (for [s steps-values]
       [step s])]])
 
-(defn referral-account []
+(defn- referral-account []
   (let [visible (reagent/atom false)]
     (fn [{:keys [account accounts change-account]}]
       [rn/view {:style (:tiny spacing/padding-vertical)}
@@ -117,17 +122,43 @@
                                           :on-press #(re-frame/dispatch [::events/generate-invite
                                                                          {:address (get account :address)}])}}]]))))
 
-(defn invite-button []
-  (let [visible (reagent/atom false)]
-    (fn []
+(defn- invite []
+  (let [visible  (reagent/atom false)
+        on-press (fn []
+                   (reset! visible true)
+                   (re-frame/dispatch [::events/get-accounts-reward]))]
+    (fn [{:keys [component]}]
       [:<>
        [rn/modal {:visible     @visible
                   :transparent true}
         [bottom-sheet/bottom-sheet {:show?     true
                                     :on-cancel #(reset! visible false)
                                     :content   referral-sheet}]]
-       [rn/view {:style (merge (:tiny spacing/padding-vertical)
-                               {:align-items :center})}
-        [button/button {:label               :t/invite-friends
-                        :on-press            #(reset! visible true)
-                        :accessibility-label :invite-friends-button}]]])))
+       [component {:on-press on-press}]])))
+
+(defn- button-component [{:keys [on-press]}]
+  (let [amount @(re-frame/subscribe [:invite/default-reward])]
+    [rn/view {:style {:align-items :center}}
+     [rn/view {:style (:tiny spacing/padding-vertical)}
+      [button/button {:label               :t/invite-friends
+                      :on-press            on-press
+                      :accessibility-label :invite-friends-button}]]
+     [rn/view {:style (:tiny spacing/padding-vertical)}
+      (when amount
+       [quo/text
+        (i18n/label :t/invite-reward {:amount (str amount)})])]]))
+
+(defn- list-item-component [{:keys [on-press]}]
+  (let [amount @(re-frame/subscribe [:invite/default-reward])]
+    [list-item/list-item
+     {:title               (i18n/label :t/invite-friends)
+      :subtitle            (i18n/label :t/invite-reward {:amount amount})
+      :icon                :main-icons/share
+      :accessibility-label :invite-list-item
+      :on-press            on-press}]))
+
+(defn invite-button []
+  [invite {:component button-component}])
+
+(defn invite-list-item []
+  [invite {:component list-item-component}])

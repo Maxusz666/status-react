@@ -15,7 +15,9 @@
     :mainnet "0x12824271339304d3a9f7e096e62a2a7e73b4a7e7"}
    :status/sticker-pack
    {:testnet "0xf852198d0385c4b871e0b91804ecd47c6ba97351"
-    :mainnet "0x110101156e8F0743948B2A61aFcf3994A8Fb172e"}})
+    :mainnet "0x110101156e8F0743948B2A61aFcf3994A8Fb172e"}
+   :status/acquisition
+   {:rinkeby "0x533406047A87c84EA7D1dc8a078eBed71186C8eE"}})
 
 (defn get-address
   [db contract]
