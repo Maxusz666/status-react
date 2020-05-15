@@ -804,3 +804,7 @@
             (= (:symbol native-coin) symbol))
       native-coin
       (symbol->token all-tokens symbol))))
+
+(defn symbol->icon [sym]
+  (:icon (first (filter #(= sym (:symbol %))
+                        (:mainnet all-default-tokens)))))

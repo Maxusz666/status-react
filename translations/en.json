@@ -542,7 +542,7 @@
     "invalid-pairing-password": "Invalid pairing password",
     "invalid-range": "Invalid format, must be between {{min}} and {{max}}",
     "invite-friends": "Invite friends",
-    "invite-reward": "Earn {{amount}} SNT for every friend you invite!",
+    "invite-reward": "Earn {{value}} for every friend you invite!",
     "invite-select-account": "Select an account to receive your referral bonus",
     "invited": "invited",
     "invite-button": "Invite",

@@ -9,6 +9,8 @@
             [status-im.utils.utils :as utils]
             [status-im.ui.components.button :as button]
             [status-im.i18n :as i18n]
+            [status-im.ethereum.tokens :as tokens]
+            [status-im.utils.money :as money]
             [quo.design-system.spacing :as spacing]
             [quo.design-system.colors :as colors]
             [status-im.ui.components.invite.events :as events]
@@ -99,7 +101,9 @@
         [bottom-sheet/bottom-sheet {:show?     true
                                     :on-cancel #(reset! visible false)
                                     :content   (accounts-list accounts account
-                                                              change-account)}]]
+                                                              (fn [a]
+                                                                (change-account a)
+                                                                (reset! visible false)))}]]
        [list-item/list-item
         {:icon     [chat-icon/custom-icon-view-list (:name account) (:color account)]
          :title    (:name account)
@@ -139,23 +143,32 @@
                    :props    props}]])))
 
 (defn- button-component [{:keys [on-press]}]
-  (let [amount @(re-frame/subscribe [:invite/default-reward])]
+  (let [amount @(re-frame/subscribe [::events/default-reward])]
     [rn/view {:style {:align-items :center}}
      [rn/view {:style (:tiny spacing/padding-vertical)}
       [button/button {:label               :t/invite-friends
                       :on-press            on-press
                       :accessibility-label :invite-friends-button}]]
-     [rn/view {:style (:tiny spacing/padding-vertical)}
+     [rn/view {:style (merge (:tiny spacing/padding-vertical)
+                             (:base spacing/padding-horizontal))}
       (when amount
-       [quo/text
-        (i18n/label :t/invite-reward {:amount (str amount)})])]]))
+        [rn/view {:style {:flex-direction  :row
+                          :align-items     :center
+                          :justify-content :center}}
+         [rn/view {:style (:tiny spacing/padding-horizontal)}
+          (when-let [{:keys [source]} (tokens/symbol->icon :SNT)]
+            [rn/image {:style  {:width  20
+                                :height 20}
+                       :source (source)}])]
+         [quo/text {:align :center}
+          (i18n/label :t/invite-reward {:value (money/wei->str :eth (* 1000000000000000 amount) "SNT")})]])]]))
 
 (defn- list-item-component [{:keys [on-press props]}]
-  (let [amount @(re-frame/subscribe [:invite/default-reward])]
+  (let [amount @(re-frame/subscribe [::events/default-reward])]
     [list-item/list-item
      {:theme               :action
       :title               (i18n/label :t/invite-friends)
-      :subtitle            (i18n/label :t/invite-reward {:amount amount})
+      :subtitle            (i18n/label :t/invite-reward {:value (money/wei->str :eth amount "SNT")})
       :icon                :main-icons/share
       :accessibility-label (:accessibility-label props)
       :on-press            on-press}]))
