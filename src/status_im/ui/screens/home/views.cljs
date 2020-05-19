@@ -9,7 +9,6 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.home.styles :as styles]
             [status-im.ui.screens.home.views.inner-item :as inner-item]
-            [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
@@ -41,11 +40,9 @@
     [react/i18n-text {:style styles/welcome-text-description
                       :key   :welcome-to-status-description}]]
    [react/view {:align-items :center :margin-bottom 50}
-    [components.common/button {:on-press
-                               #(re-frame/dispatch [:navigate-reset {:index  0
-                                                                     :routes [{:name :tabs}]}])
-                               :accessibility-label :lets-go-button
-                               :label               (i18n/label :t/lets-go)}]]])
+    [button/button {:on-press            #(re-frame/dispatch [:navigate-reset :tabs])
+                    :accessibility-label :lets-go-button
+                    :label               :t/lets-go}]]])
 
 (defn home-tooltip-view []
   [react/view (styles/chat-tooltip)

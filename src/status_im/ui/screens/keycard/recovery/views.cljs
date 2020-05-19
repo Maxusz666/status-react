@@ -30,11 +30,13 @@
                 :align-items     :center}
     [react/view {:flex-direction :column
                  :align-items    :center}
+
      [react/view {:margin-top 16
                   :width      311}
       [react/text {:style {:typography :header
                            :text-align :center}}
        (i18n/label :t/keycard-recovery-intro-header)]]
+
      [react/view {:margin-top 16
                   :width      311}
       [react/text {:style {:font-size   15
@@ -42,6 +44,7 @@
                            :color       colors/gray
                            :text-align  :center}}
        (i18n/label :t/keycard-recovery-intro-text)]]
+
      [react/view {:margin-top 33}
       [react/touchable-highlight {:on-press #(.openURL ^js react/linking
                                                        constants/keycard-integration-link)}
@@ -53,24 +56,17 @@
          (i18n/label :t/learn-more-about-keycard)]
         [vector-icons/tiny-icon :tiny-icons/tiny-external {:color           colors/blue
                                                            :container-style {:margin-left 5}}]]]]]
-    [react/view
-     [react/view {:align-items     :center
-                  :justify-content :center}
-      [react/image {:source (resources/get-image :keycard)
-                    :style  {:width  144
-                             :height 114}}]]]
+
+    [react/view {:align-items      :center
+                 :justify-content :center}
+     [react/image {:source (resources/get-image :keycard)
+                   :style  {:width  144
+                            :height 114}}]]
+
     [react/view {:margin-bottom 50}
-     [react/touchable-highlight
-      {:on-press #(re-frame/dispatch [:keycard.recovery.intro.ui/begin-recovery-pressed])}
-      [react/view {:background-color colors/blue-light
-                   :align-items      :center
-                   :justify-content  :center
-                   :flex-direction   :row
-                   :width            133
-                   :height           44
-                   :border-radius    10}
-       [react/text {:style {:color colors/blue}}
-        (i18n/label :t/keycard-recovery-intro-button-text)]]]]]])
+     [button/button
+      {:on-press #(re-frame/dispatch [:keycard.recovery.intro.ui/begin-recovery-pressed])
+       :label    (i18n/label :t/keycard-recovery-intro-button-text)}]]]])
 
 (defview pin []
   (letsubs [pin [:hardwallet/pin]
@@ -209,17 +205,9 @@
                      :ellipsize-mode  :middle}
          (utils.core/truncate-str address 14 true)]]]
       [react/view {:margin-bottom 50}
-       [react/touchable-highlight
-        {:on-press #(re-frame/dispatch [:keycard.recovery.success/finish-pressed])}
-        [react/view {:background-color colors/blue-light
-                     :align-items      :center
-                     :justify-content  :center
-                     :flex-direction   :row
-                     :width            133
-                     :height           44
-                     :border-radius    10}
-         [react/text {:style {:color colors/blue}}
-          (i18n/label :t/finish)]]]]]]))
+       [button/button
+        {:on-press #(re-frame/dispatch [:keycard.recovery.success/finish-pressed])
+         :label    (i18n/label :t/finish)}]]]]))
 
 (defview no-key []
   (letsubs [card-state [:hardwallet-card-state]]
@@ -257,20 +245,10 @@
                          :style  {:width  165
                                   :height 110}}])]]]
       [react/view {:margin-bottom 50}
-       [react/touchable-highlight
-        {:on-press #(re-frame/dispatch [:keycard.recovery.no-key.ui/generate-key-pressed])}
-        [react/view {:background-color colors/blue-light
-                     :align-items      :center
-                     :justify-content  :center
-                     :flex-direction   :row
-                     :width            190
-                     :height           44
-                     :border-radius    10}
-         [react/text {:style {:color colors/blue}}
-          (i18n/label :t/generate-new-key)]]]
-       [react/touchable-highlight
-        {:on-press #(re-frame/dispatch [:navigate-back])}
-        [react/text {:style {:text-align  :center
-                             :padding-top 27
-                             :color       colors/blue}}
-         (i18n/label :t/cancel)]]]]]))
+       [button/button
+        {:on-press #(re-frame/dispatch [:keycard.recovery.no-key.ui/generate-key-pressed])
+         :label    (i18n/label :t/generate-new-key)}]
+       [button/button
+        {:type :secondary
+         :on-press #(re-frame/dispatch [:navigate-back])
+         :label (i18n/label :t/cancel)}]]]]))

@@ -24,11 +24,9 @@
     [react/view styles/container
      [topbar/topbar]
      [react/view {:flex            1
-                  :flex-direction  :column
                   :justify-content :space-between
                   :align-items     :center}
-      [react/view {:flex-direction :column
-                   :align-items    :center}
+      [react/view {:align-items    :center}
        [react/view
         [react/view {:align-items     :center
                      :justify-content :center}
@@ -90,18 +88,8 @@
                                                   :padding-right 35}}
                               text]]]]))]
       [react/view {:margin-bottom 40}
-       [react/touchable-highlight
-        {:on-press #(re-frame/dispatch [:keycard.onboarding.intro.ui/begin-setup-pressed])}
-        [react/view {:background-color colors/blue-light
-                     :align-items      :center
-                     :justify-content  :center
-                     :flex-direction   :row
-                     :width            133
-                     :height           44
-                     :border-radius    10}
-         [react/text {:style                {:color colors/blue}
-                      :accessibility-label  :begin-set-up}
-          (i18n/label :t/begin-set-up)]]]]]]))
+       [button/button {:label    (i18n/label :t/begin-set-up)
+                       :on-press #(re-frame/dispatch [:keycard.onboarding.intro.ui/begin-setup-pressed])}]]]]))
 
 (defview puk-code []
   (letsubs [secrets [:hardwallet-secrets]

@@ -7,15 +7,7 @@
 (defn style-container [type disabled? theme]
   (merge
    (when (= type :main)
-     {:margin-vertical 8 :margin-horizontal 16})
-   (cond
-     (#{:main :secondary} type)
-     {:padding-horizontal 32}
-     (= :next type)
-     {:padding-right 12 :padding-left 20}
-     (= :previous type)
-     {:padding-right 20 :padding-left 12}
-     :else nil)
+     {:padding-horizontal 32})
    {:height 44 :border-radius 8
     :align-items :center :justify-content :center
     :background-color (cond

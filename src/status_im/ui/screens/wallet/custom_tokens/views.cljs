@@ -3,7 +3,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.button :as button]
             [clojure.string :as string]
             [status-im.i18n :as i18n]
             [quo.core :as quo]
@@ -97,9 +97,9 @@
                   :align-items       :center}
 
       [react/view {:style {:flex 1}}]
-      [components.common/bottom-button
-       {:forward?  true
-        :label     (i18n/label :t/add)
+      [button/button
+       {:type      :next
+        :label     :t/add
         :disabled? (boolean
                     (or in-progress?
                         error error-name error-symbol

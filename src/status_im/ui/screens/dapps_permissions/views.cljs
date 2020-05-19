@@ -1,13 +1,12 @@
 (ns status-im.ui.screens.dapps-permissions.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
             [status-im.constants :as constants]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.dapps-permissions.styles :as styles]
-            [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.button :as button]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.topbar :as topbar]))
 
@@ -50,5 +49,6 @@
        :key-fn    (fn [_ i] (str i))
        :render-fn list/flat-list-generic-render-fn}]
      [react/view {:padding-vertical 16}
-      [components.common/red-button {:label    (i18n/label :t/revoke-access)
-                                     :on-press #(re-frame/dispatch [:dapps/revoke-access dapp])}]]]))
+      [button/button {:label    :t/revoke-access
+                      :theme    :red
+                      :on-press #(re-frame/dispatch [:dapps/revoke-access dapp])}]]]))

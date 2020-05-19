@@ -4,10 +4,10 @@
             [status-im.i18n :as i18n]
             [status-im.network.core :as network]
             [status-im.network.ui.edit-network.styles :as styles]
-            [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as components.styles]
+            [status-im.ui.components.button :as button]
             [quo.core :as quo]
             [status-im.ui.components.topbar :as topbar])
   (:require-macros [status-im.utils.views :as views]))
@@ -60,8 +60,8 @@
                :on-change-text #(re-frame/dispatch [::network/input-changed :network-id %])}]])]]
         [react/view styles/bottom-container
          [react/view components.styles/flex]
-         [components.common/bottom-button
-          {:forward?  true
-           :label     (i18n/label :t/save)
+         [button/button
+          {:type      :next
+           :label     :t/save
            :disabled? (not is-valid?)
            :on-press  #(re-frame/dispatch [::network/save-network-pressed])}]]]])))

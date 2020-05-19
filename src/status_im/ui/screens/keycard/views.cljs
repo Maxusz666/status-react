@@ -10,6 +10,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.chat.photos :as photos]
+            [status-im.ui.components.button :as button]
             [status-im.ui.screens.hardwallet.pin.views :as pin.views]
             [status-im.ui.screens.keycard.styles :as styles]
             [status-im.constants :as constants]
@@ -47,17 +48,9 @@
                    :style       {:width  144
                                  :height 114}}]]
     [react/view {:margin-bottom 32}
-     [react/touchable-highlight
-      {:on-press #(re-frame/dispatch [:navigate-back])}
-      [react/view {:background-color colors/blue-light
-                   :align-items      :center
-                   :justify-content  :center
-                   :flex-direction   :row
-                   :width            133
-                   :height           44
-                   :border-radius    10}
-       [react/text {:style {:color colors/blue}}
-        (i18n/label :t/ok-got-it)]]]]]])
+     [button/button
+      {:on-press #(re-frame/dispatch [:navigate-back])
+       :lable    (i18n/label :t/ok-got-it)}]]]])
 
 ;; NOTE(Ferossgp): Seems like it should be in popover
 (defn wrong []
@@ -87,17 +80,9 @@
                    :style  {:width  255
                             :height 124}}]]
     [react/view {:margin-bottom 32}
-     [react/touchable-highlight
-      {:on-press #(re-frame/dispatch [:navigate-back])}
-      [react/view {:background-color colors/blue-light
-                   :align-items      :center
-                   :justify-content  :center
-                   :flex-direction   :row
-                   :width            133
-                   :height           44
-                   :border-radius    10}
-       [react/text {:style {:color colors/blue}}
-        (i18n/label :t/ok-got-it)]]]]]])
+     [button/button
+      {:on-press #(re-frame/dispatch [:navigate-back])
+       :label    (i18n/label :t/ok-got-it)}]]]])
 
 (defn unpaired []
   [react/view {:flex             1
@@ -128,22 +113,14 @@
     [react/view {:margin-bottom  32
                  :flex-direction :column
                  :align-items    :center}
-     [react/touchable-highlight
-      {:on-press #(re-frame/dispatch [:keycard.login.ui/pair-card-pressed])}
-      [react/view {:background-color colors/blue-light
-                   :align-items      :center
-                   :justify-content  :center
-                   :flex-direction   :row
-                   :width            133
-                   :height           44
-                   :border-radius    10}
-       [react/text {:style {:color colors/blue}}
-        (i18n/label :t/pair-this-card)]]]
+     [button/button
+      {:on-press #(re-frame/dispatch [:keycard.login.ui/pair-card-pressed])
+       :label    (i18n/label :t/pair-this-card)}]
      [react/view {:margin-top 27}
-      [react/touchable-highlight
-       {:on-press #(re-frame/dispatch [:keycard.login.ui/dismiss-pressed])}
-       [react/text {:style {:color colors/blue}}
-        (i18n/label :t/dismiss)]]]]]])
+      [button/button
+       {:type     :secondary
+        :on-press #(re-frame/dispatch [:keycard.login.ui/dismiss-pressed])
+        :label    (i18n/label :t/dismiss)}]]]]])
 
 ;; NOTE(Ferossgp): Seems like it should be in popover
 (defn not-keycard []
@@ -185,17 +162,8 @@
         [vector-icons/tiny-icon :tiny-icons/tiny-external {:color           colors/blue
                                                            :container-style {:margin-left 5}}]]]]]
     [react/view {:margin-bottom 32}
-     [react/touchable-highlight
-      {:on-press #(re-frame/dispatch [:navigate-back])}
-      [react/view {:background-color colors/blue-light
-                   :align-items      :center
-                   :justify-content  :center
-                   :flex-direction   :row
-                   :width            133
-                   :height           44
-                   :border-radius    10}
-       [react/text {:style {:color colors/blue}}
-        (i18n/label :t/ok-got-it)]]]]]])
+     [button/button {:on-press #(re-frame/dispatch [:navigate-back])
+                     :label    (i18n/label :t/ok-got-it)}]]]])
 
 (defn photo [_ _]
   (reagent/create-class

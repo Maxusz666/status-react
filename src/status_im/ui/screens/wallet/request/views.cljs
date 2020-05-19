@@ -29,7 +29,9 @@
                     :style               {:line-height 22 :font-size 15
                                           :font-family "monospace"}}
         (eip55/address->checksum address)]]]
-     [react/view {:margin-top 12 :margin-bottom 8}
+     [react/view {:padding-top        12
+                  :padding-horizontal 16
+                  :padding-bottom     16}
       [button/button
        {:on-press            #(re-frame/dispatch [:wallet.accounts/share address])
         :label               :t/share-address
