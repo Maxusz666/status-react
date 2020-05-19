@@ -29,11 +29,6 @@
 (def multiaccount-badge-text
   {:font-weight "500"})
 
-(defn bottom-button-container []
-  {:flex-direction     :row
-   :padding-horizontal 12
-   :padding-vertical   8
-   :border-top-width   1
-   :border-top-color   colors/gray-lighter
-   :justify-content    :center
-   :align-items        :center})
+(def multiaccount-badge-pub-key-text
+  {:font-family "monospace"
+   :color       colors/gray})

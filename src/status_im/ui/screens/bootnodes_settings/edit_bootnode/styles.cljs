@@ -9,9 +9,8 @@
    :margin-vertical   15})
 
 (def bottom-container
-  {:flex-direction    :row
-   :margin-horizontal 12
-   :margin-vertical   15})
+  {:flex-direction   :row
+   :padding-vertical 4})
 
 (def button-container
   {:margin-top        8
@@ -32,6 +31,3 @@
 (def delete-button
   (assoc button
          :background-color colors/red))
-
-(def container
-  components.styles/flex)

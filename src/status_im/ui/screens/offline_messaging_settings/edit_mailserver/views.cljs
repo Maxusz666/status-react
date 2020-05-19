@@ -6,8 +6,7 @@
    [status-im.i18n :as i18n]
    [status-im.ui.components.colors :as colors]
    [status-im.ui.components.icons.vector-icons :as vector-icons]
-   [status-im.ui.components.styles :as components.styles]
-   [status-im.ui.components.common.common :as components.common]
+   [status-im.ui.components.toolbar :as toolbar]
    [status-im.ui.screens.offline-messaging-settings.edit-mailserver.styles :as styles]
    [clojure.string :as string]
    [quo.core :as quo]
@@ -48,11 +47,10 @@
                             (not (string/blank? name))
                             (empty? validation-errors))
           invalid-url? (contains? validation-errors :url)]
-      [react/view components.styles/flex
-       [react/keyboard-avoiding-view components.styles/flex
-        [topbar/topbar {:title (if id :t/mailserver-details :t/add-mailserver)}]
-        [react/scroll-view {:keyboard-should-persist-taps :handled}
-         [react/view styles/edit-mailserver-view
+      [react/keyboard-avoiding-view {:style {:flex 1}}
+       [topbar/topbar {:title (if id :t/mailserver-details :t/add-mailserver)}]
+       [react/scroll-view {:keyboard-should-persist-taps :handled}
+        [react/view styles/edit-mailserver-view
           [react/view {:padding-vertical 8}
            [quo/text-input
             {:label          (i18n/label :t/name)
@@ -78,10 +76,8 @@
             [react/view
              [connect-button id]
              [delete-button id]])]]
-        [react/view styles/bottom-container
-         [react/view components.styles/flex]
-         [components.common/bottom-button
-          {:forward?  true
-           :label     (i18n/label :t/save)
-           :disabled? (not is-valid?)
-           :on-press  #(re-frame/dispatch [:mailserver.ui/save-pressed])}]]]])))
+       [toolbar/toolbar
+        {:right {:type      :next
+                 :label     :t/save
+                 :disabled? (not is-valid?)
+                 :on-press  #(re-frame/dispatch [:mailserver.ui/save-pressed])}}]])))

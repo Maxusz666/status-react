@@ -2,9 +2,8 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.styles :as components.styles]
+            [status-im.ui.components.toolbar :as toolbar]
             [quo.core :as quo]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.bootnodes-settings.edit-bootnode.styles
@@ -28,11 +27,10 @@
           name         (get-in manage-bootnode [:name :value])
           is-valid?    (empty? validation-errors)
           invalid-url? (contains? validation-errors :url)]
-      [react/view styles/container
-       [react/keyboard-avoiding-view components.styles/flex
-        [topbar/topbar {:title (if id :t/bootnode-details :t/add-bootnode)}]
-        [react/scroll-view {:keyboard-should-persist-taps :handled}
-         [react/view styles/edit-bootnode-view
+      [react/keyboard-avoiding-view {:flex 1}
+       [topbar/topbar {:title (if id :t/bootnode-details :t/add-bootnode)}]
+       [react/scroll-view {:keyboard-should-persist-taps :handled}
+        [react/view styles/edit-bootnode-view
           [react/view {:padding-vertical 8}
            [quo/text-input
             {:label               (i18n/label :t/name)
@@ -62,10 +60,8 @@
                                                                     :handler :bootnodes.callback/qr-code-scanned}])}})]]
           (when id
             [delete-button id])]]
-        [react/view styles/bottom-container
-         [react/view components.styles/flex]
-         [components.common/bottom-button
-          {:forward?  true
-           :label     (i18n/label :t/save)
-           :disabled? (not is-valid?)
-           :on-press  #(re-frame/dispatch [:bootnodes.ui/save-pressed])}]]]])))
+       [toolbar/toolbar
+        {:right {:type      :next
+                 :label     :t/save
+                 :disabled? (not is-valid?)
+                 :on-press  #(re-frame/dispatch [:bootnodes.ui/save-pressed])}}]])))

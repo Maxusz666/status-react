@@ -3,10 +3,11 @@
             [status-im.hardwallet.recovery :as hardwallet.recovery]
             [status-im.i18n :as i18n]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.button :as button]
+            [status-im.ui.components.toolbar :as bottom-toolbar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.components.topbar :as topbar]
@@ -158,18 +159,11 @@
        [react/view {:margin-top 5
                     :width      250}
         [tooltip/tooltip error]]]
-      [react/view {:flex-direction  :row
-                   :justify-content :space-between
-                   :align-items     :center
-                   :width           "100%"
-                   :height          86}
-       [react/view]
-       [react/view {:margin-right 20}
-        [components.common/bottom-button
-         {:on-press  #(re-frame/dispatch [:keycard.onboarding.pair.ui/next-pressed])
-          :label     (i18n/label :t/pair-card)
-          :disabled? (empty? pair-code)
-          :forward?  true}]]]]]))
+      [bottom-toolbar/toolbar
+       {:right {:on-press  #(re-frame/dispatch [:keycard.onboarding.pair.ui/next-pressed])
+                :label     :t/pair-card
+                :disabled? (empty? pair-code)
+                :type      :next}}]]]))
 
 (defview success []
   (letsubs [address [:hardwallet-multiaccount-wallet-address]

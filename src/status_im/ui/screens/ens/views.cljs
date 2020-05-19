@@ -19,6 +19,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.chat.utils :as chat.utils]
+            [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.screens.chat.message.message :as message]
             [status-im.ui.screens.chat.styles.message.message :as message.style]
             [status-im.ui.screens.chat.photos :as photos]
@@ -276,29 +277,6 @@
     "\n"
     (i18n/label :t/ens-understand)]])
 
-(defn- registration-bottom-bar
-  [checked? amount-label]
-  [react/view {:style {:height           60
-                       :border-top-width 1
-                       :border-top-color colors/gray-lighter}}
-   [react/view {:style {:margin-horizontal 16
-                        :flex-direction    :row
-                        :justify-content   :space-between}}
-    [react/view {:flex-direction :row}
-     [react/view {:style {:margin-top 12 :margin-right 8}}
-      [components.common/logo
-       {:size      36
-        :icon-size 16}]]
-     [react/view {:flex-direction :column :margin-vertical 8}
-      [react/text {:style {:font-size 15}}
-       amount-label]
-      [react/text {:style {:color colors/gray :font-size 15}}
-       (i18n/label :t/ens-deposit)]]]
-    [button {:disabled?    (not @checked?)
-             :label-style  (when (not @checked?) {:color colors/gray})
-             :on-press     #(debounce/dispatch-and-chill [::ens/register-name-pressed] 2000)}
-     (i18n/label :t/ens-register)]]])
-
 (defn- registration
   [checked contract address public-key]
   [react/view {:style {:flex 1 :margin-top 24}}
@@ -309,38 +287,54 @@
               :content public-key}]]
    [agreement checked contract]])
 
-(views/defview checkout []
-  (views/letsubs [{:keys [username address custom-domain? public-key
-                          contract amount-label]}
-                  [:ens/checkout-screen]]
-    (let [checked? (reagent/atom false)]
-      [react/keyboard-avoiding-view {:flex 1}
-       [toolbar]
-       [react/scroll-view {:style {:flex 1}}
-        [react/view {:style {:flex 1
-                             :align-items :center
-                             :justify-content :center}}
-         [big-blue-icon nil]
-         [react/text {:text-align :center
-                      :style      {:flex 1
-                                   :font-size 22
-                                   :padding-horizontal 48}}
-          username]
-         [react/view {:style {:height 36
+(defn checkout []
+  (let  [checked? (reagent/atom false)]
+    (fn []
+     (let [{:keys [username address custom-domain? public-key
+                   contract amount-label]}
+           @(re-frame/subscribe [:ens/checkout-screen])]
+       [react/keyboard-avoiding-view {:flex 1}
+        [toolbar]
+        [react/scroll-view {:style {:flex 1}}
+         [react/view {:style {:flex 1
                               :align-items :center
-                              :justify-content :space-between
-                              :padding-horizontal 12
-                              :margin-top 24
-                              :margin-horizontal 16
-                              :border-color colors/gray-lighter :border-radius 20
-                              :border-width 1
-                              :flex-direction :row}}
-          [react/text {:style {:font-size 13
-                               :typography :main-medium}}
-           (domain-label custom-domain?)]
-          [react/view {:flex 1 :min-width 24}]]]
-        [registration checked? contract address public-key]]
-       [registration-bottom-bar checked? amount-label]])))
+                              :justify-content :center}}
+          [big-blue-icon nil]
+          [react/text {:text-align :center
+                       :style      {:flex 1
+                                    :font-size 22
+                                    :padding-horizontal 48}}
+           username]
+          [react/view {:style {:height 36
+                               :align-items :center
+                               :justify-content :space-between
+                               :padding-horizontal 12
+                               :margin-top 24
+                               :margin-horizontal 16
+                               :border-color colors/gray-lighter :border-radius 20
+                               :border-width 1
+                               :flex-direction :row}}
+           [react/text {:style {:font-size 13
+                                :typography :main-medium}}
+            (domain-label custom-domain?)]
+           [react/view {:flex 1 :min-width 24}]]]
+         [registration checked? contract address public-key]]
+        [toolbar/toolbar
+         {:show-border? true
+          :size         :large
+          :left         [react/view {:flex-direction :row}
+                         [react/view {:style {:margin-top 12 :margin-right 8}}
+                          [components.common/logo
+                           {:size      36
+                            :icon-size 16}]]
+                         [react/view {:flex-direction :column :margin-vertical 8}
+                          [react/text {:style {:font-size 15}}
+                           amount-label]
+                          [react/text {:style {:color colors/gray :font-size 15}}
+                           (i18n/label :t/ens-deposit)]]]
+          :right        {:disabled? (not @checked?)
+                         :label     (i18n/label :t/ens-register)
+                         :on-press  #(debounce/dispatch-and-chill [::ens/register-name-pressed] 2000)}}]]))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; CONFIRMATION SCREEN
@@ -591,11 +585,11 @@
         (i18n/label :t/ens-welcome-point-verify)]]
       [react/text {:style {:margin-top 16 :text-align :center :color colors/gray :typography :caption :padding-bottom 96}}
        (i18n/label :t/ens-powered-by)]]
-     [react/view {:align-items :center :background-color colors/white
-                  :position :absolute :left 0 :right 0 :bottom 0
-                  :border-top-width 1 :border-top-color colors/gray-lighter}
-      [button {:on-press #(re-frame/dispatch [::ens/get-started-pressed])
-               :label    (i18n/label :t/get-started)}]]]))
+     [toolbar/toolbar
+      {:show-border? true
+       :right        {:on-press #(re-frame/dispatch [::ens/get-started-pressed])
+                      :type     :next
+                      :label    (i18n/label :t/get-started)}}]]))
 
 (defn- name-item [{:keys [name action subtitle]}]
   (let [stateofus-username (stateofus/username name)
