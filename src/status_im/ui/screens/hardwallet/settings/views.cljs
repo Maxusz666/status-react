@@ -6,7 +6,7 @@
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.button :as button]
+            [quo.core :as quo]
             [status-im.ui.components.topbar :as topbar]
             [status-im.constants :as constants]
             [status-im.ui.screens.keycard.views :as keycard.views]
@@ -46,10 +46,12 @@
 (defn- reset-card-next-button [disabled?]
   [react/view {:margin-right  6
                :margin-bottom 8}
-   [button/button
+   [quo/button
+    ;; TODO: Should have label?:
     {:on-press  #(re-frame/dispatch [:keycard-settings.ui/reset-card-next-button-pressed])
-     :disabled? disabled?
-     :type      :next}]])
+     :disabled  disabled?
+     :type      :secondary
+     :after     :main-icon/next}]])
 
 (defview reset-card []
   (letsubs [disabled? [:keycard-reset-card-disabled?]]

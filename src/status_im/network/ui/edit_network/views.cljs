@@ -7,7 +7,6 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.button :as button]
             [quo.core :as quo]
             [status-im.ui.components.topbar :as topbar])
   (:require-macros [status-im.utils.views :as views]))
@@ -60,8 +59,9 @@
                :on-change-text #(re-frame/dispatch [::network/input-changed :network-id %])}]])]]
         [react/view styles/bottom-container
          [react/view components.styles/flex]
-         [button/button
-          {:type      :next
-           :label     :t/save
-           :disabled? (not is-valid?)
-           :on-press  #(re-frame/dispatch [::network/save-network-pressed])}]]]])))
+         [quo/button
+          {:after      :main-icons/next
+           :type       :secondary
+           :disabled   (not is-valid?)
+           :on-press  #(re-frame/dispatch [::network/save-network-pressed])}
+          (i18n/label :t/save)]]]])))

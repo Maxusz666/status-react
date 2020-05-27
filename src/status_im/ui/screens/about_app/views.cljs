@@ -1,9 +1,10 @@
 (ns status-im.ui.screens.about-app.views
   (:require [re-frame.core :as re-frame]
+            [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.list-item.views :as list-item]
+            [quo.core :as quo]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
@@ -11,45 +12,29 @@
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- data [app-version node-version]
-  [{:type                :small
-    :title               :t/privacy-policy
+  [{:size                :small
+    :title               (i18n/label :t/privacy-policy)
     :accessibility-label :privacy-policy
     :on-press
     #(re-frame/dispatch
       [:privacy-policy/privacy-policy-button-pressed])
-    :accessories         [:chevron]}
+    :chevron             true}
    [copyable-text/copyable-text-view
     {:copied-text app-version}
-    [list-item/list-item
-     {:type                :small
+    [quo/list-item
+     {:size                :small
       :accessibility-label :app-version
-      :title-prefix        :t/version
-      :title
-      [react/text
-       {:number-of-lines 1
-        :ellipsize-mode  :middle
-        :style
-        {:color        colors/gray
-         :padding-left 16
-         :text-align   :right
-         :line-height  22}}
-       app-version]}]]
+      :title               (i18n/label :t/version)
+      :accessory           :text
+      :accessory-text      app-version}]]
    [copyable-text/copyable-text-view
     {:copied-text node-version}
-    [list-item/list-item
-     {:type                :small
+    [quo/list-item
+     {:size                :small
       :accessibility-label :node-version
-      :title-prefix        :t/node-version
-      :title
-      [react/text
-       {:number-of-lines 1
-        :ellipsize-mode  :middle
-        :style
-        {:color        colors/gray
-         :padding-left 16
-         :text-align   :right
-         :line-height  22}}
-       node-version]}]]])
+      :title               (i18n/label :t/node-version)
+      :acccessory          :text
+      :accessory-text      node-version}]]])
 
 (views/defview about-app []
   (views/letsubs [app-version  [:get-app-short-version]

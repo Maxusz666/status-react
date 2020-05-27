@@ -1,12 +1,13 @@
 (ns status-im.ui.screens.dapps-permissions.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
+            [status-im.i18n :as i18n]
             [status-im.constants :as constants]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.dapps-permissions.styles :as styles]
-            [status-im.ui.components.button :as button]
+            [quo.core :as quo]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.topbar :as topbar]))
 
@@ -16,7 +17,7 @@
 
 (defn prepare-items [{:keys [dapp permissions]}]
   {:title       dapp
-   :accessories [:chevron]
+   :chevron true
    :on-press    #(re-frame/dispatch [:navigate-to :manage-dapps-permissions {:dapp dapp :permissions permissions}])
    :icon        d-icon})
 
@@ -27,7 +28,7 @@
                     name
                     (= permission constants/dapp-permission-contact-code)
                     :t/contact-code)
-     :type        :small
+     :size       :small
      :accessories [:main-icons/check]}))
 
 (views/defview dapps-permissions []
@@ -49,6 +50,6 @@
        :key-fn    (fn [_ i] (str i))
        :render-fn list/flat-list-generic-render-fn}]
      [react/view {:padding-vertical 16}
-      [button/button {:label    :t/revoke-access
-                      :theme    :red
-                      :on-press #(re-frame/dispatch [:dapps/revoke-access dapp])}]]]))
+      [quo/button {:theme    :negative
+                   :on-press #(re-frame/dispatch [:dapps/revoke-access dapp])}
+       (i18n/label :t/revoke-access)]]]))

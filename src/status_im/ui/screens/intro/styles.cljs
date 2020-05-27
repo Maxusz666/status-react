@@ -58,11 +58,11 @@
    :align-items    :flex-start})
 
 (def multiaccount-image
-  {:width         40
-   :height        40
-   :border-radius 20
-   :border-width  1
-   :border-color  colors/black-transparent})
+  {:width            40
+   :height           40
+   :border-radius    20
+   :border-width     1
+   :border-color     colors/black-transparent})
 
 (defn password-text-input [width]
   {:typography :header

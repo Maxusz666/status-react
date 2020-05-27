@@ -9,6 +9,7 @@
             [cljs.spec.alpha :as spec]
             [status-im.multiaccounts.db :as multiaccounts.db]
             [status-im.ui.components.toolbar :as toolbar]
+            [quo.core :as quo]
             [status-im.ui.components.topbar :as topbar]
             [status-im.utils.utils :as utils.utils]
             [status-im.ui.components.icons.vector-icons :as icons]
@@ -176,24 +177,25 @@
      [toolbar/toolbar
       {:show-border? true
        :right
-       {:type                :next
-        :label               :t/add-account
-        :accessibility-label :add-account-add-account-button
-        :on-press
-        (if (and keycard?
-                 (not= type :watch))
-          #(re-frame/dispatch [:hardwallet/new-account-pin-sheet
-                               {:view {:content pin
-                                       :height  256}}])
-          #(re-frame/dispatch [:wallet.accounts/add-new-account
-                               (ethereum/sha3 @entered-password)]))
-        :disabled?
-        (or add-account-disabled?
-            (and
-             (not (= type :watch))
+       [quo/button
+        {:type                :secondary
+         :after               :main-icon/next
+         :accessibility-label :add-account-add-account-button
+         :on-press
+         (if (and keycard?
+                  (not= type :watch))
+           #(re-frame/dispatch [:hardwallet/new-account-pin-sheet
+                                {:view {:content pin
+                                        :height  256}}])
+           #(re-frame/dispatch [:wallet.accounts/add-new-account
+                                (ethereum/sha3 @entered-password)]))
+         :disabled
+         (or add-account-disabled?
              (and
-              (not keycard?)
-              (not (spec/valid? ::multiaccounts.db/password
-                                @entered-password)))))}}]
+              (not (= type :watch))
+              (and
+               (not keycard?)
+               (not (spec/valid? ::multiaccounts.db/password
+                                 @entered-password)))))}
+        (i18n/label :t/add-account)]}]
      [pin-sheet]]))
-

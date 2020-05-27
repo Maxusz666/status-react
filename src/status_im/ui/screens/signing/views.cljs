@@ -4,8 +4,7 @@
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.list-item.views :as list-item]
-            [status-im.ui.components.button :as button]
+            [quo.core :as quo]
             [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.wallet.utils :as wallet.utils]
             [status-im.ui.components.list.views :as list]
@@ -34,25 +33,26 @@
     (utils/get-shortened-checksum-address (:address contact))))
 
 (defn contact-item [title contact]
-  [list-item/list-item
-   {:title       title
-    :title-prefix-width 45
-    :type               :small
-    :accessories
-    [[copyable-text/copyable-text-view
-      {:copied-text (displayed-name contact)}
-      [react/text
-       {:ellipsize-mode  :middle
-        :number-of-lines 1
-        :style           {:font-family "monospace"
-                          :line-height 22}}
-       (displayed-name contact)]]]}])
+  [copyable-text/copyable-text-view
+   {:copied-text (displayed-name contact)}
+   [quo/list-item
+    {:title              title
+     :title-prefix-width 45
+     :size               :small
+     ;; FIXME
+     :accessory          :text
+     :accessory-text     [react/text
+                          {:ellipsize-mode  :middle
+                           :number-of-lines 1
+                           :style           {:font-family "monospace"
+                                             :line-height 22}}
+                          (displayed-name contact)]}]])
 
 (defn token-item [{:keys [icon color] :as token} display-symbol]
   (when token
     [react/view
-     [list-item/list-item
-      {:type        :small
+     [quo/list-item
+      {:size        :small
        :title       :t/wallet-asset
        :accessories
        [display-symbol
@@ -86,10 +86,10 @@
        [{:style {:color colors/black}} (displayed-name contact)]]
       [react/text {:style {:margin-top 6 :color colors/gray}}
        (str fee " " fee-display-symbol " " (string/lower-case (i18n/label :t/network-fee)))])]
-   [button/button (merge {:type :secondary
-                          :container-style {:padding-horizontal 24}
-                          :label (i18n/label :t/cancel)}
-                         (when-not in-progress? {:on-press #(re-frame/dispatch [:signing.ui/cancel-is-pressed])}))]])
+   [react/view {:padding-horizontal 24}
+    [quo/button (merge {:type :secondary}
+                       (when-not in-progress? {:on-press #(re-frame/dispatch [:signing.ui/cancel-is-pressed])}))
+     (i18n/label :t/cancel)]]])
 
 (views/defview keycard-pin-view []
   (views/letsubs [pin [:hardwallet/pin]
@@ -173,22 +173,21 @@
 (defn signature-request-footer [keycard-step small-screen?]
   (fn []
     [react/view {:style {:align-self :stretch}}
-     [button/button {:type            :main
-                     :disabled?       (= keycard-step :success)
-                     :text-style      {:font-size (if small-screen? 18 20)}
-                     :style           {:align-self :stretch}
-                     :container-style {:height (if small-screen? 52 64)}
-                     :label           (i18n/label :t/show-transaction-data)
-                     :on-press        #(re-frame/dispatch [:show-popover {:view :transaction-data}])}]
-     [button/button {:type            :main
-                     :theme           :red
-                     :disabled?       (= keycard-step :success)
-                     :container-style {:margin-top 8
-                                       :height     64 :margin-bottom 16}
-                     :style           {:align-self :stretch}
-                     :text-style     {:font-size 20}
-                     :label           (i18n/label :t/decline)
-                     :on-press        #(re-frame/dispatch [:signing.ui/cancel-is-pressed])}]]))
+     [react/view {:style {:height (if small-screen? 52 64)}}
+      ;; FIXME(Ferossgp): The height and border radius in Figma is different here
+      [quo/button {:disabled?  (= keycard-step :success)
+                   :text-style {:font-size (if small-screen? 18 20)}
+                   :style      {:align-self :stretch}
+                   :on-press   #(re-frame/dispatch [:show-popover {:view :transaction-data}])}
+       (i18n/label :t/show-transaction-data)]]
+     [react/view {:margin-top 8
+                  :height     64 :margin-bottom 16}
+      [quo/button {:theme      :negative
+                   :disabled?  (= keycard-step :success)
+                   :style      {:align-self :stretch}
+                   :text-style {:font-size 20}
+                   :on-press   #(re-frame/dispatch [:signing.ui/cancel-is-pressed])}
+       (i18n/label :t/decline)]]]))
 
 (defn signature-request [{:keys [formatted-data account fiat-amount fiat-currency keycard-step]}
                          connected?
@@ -245,12 +244,8 @@
      [separator]
      [react/view {:style {:margin-horizontal 8
                           :margin-vertical   16}}
-      [button/button  {:type            :main
-                       :text-style      {:font-size 20}
-                       :style           {:margin-horizontal 0}
-                       :container-style {:height 64}
-                       :label           (i18n/label :t/close)
-                       :on-press        #(re-frame/dispatch [:hide-popover])}]]]))
+      [quo/button  {:on-press #(re-frame/dispatch [:hide-popover])}
+       (i18n/label :t/close)]]]))
 
 (views/defview password-view [{:keys [type error in-progress? enabled?] :as sign}]
   (views/letsubs [phrase [:signing/phrase]]
@@ -273,9 +268,9 @@
         (if in-progress?
           [react/activity-indicator {:animating true
                                      :size      :large}]
-          [button/button {:on-press  #(re-frame/dispatch [:signing.ui/sign-is-pressed])
-                          :disabled? (not enabled?)
-                          :label     :t/transactions-sign}])]]
+          [quo/button {:on-press  #(re-frame/dispatch [:signing.ui/sign-is-pressed])
+                       :disabled  (not enabled?)}
+           (i18n/label :t/transactions-sign)])]]
       :keycard
       [keycard-view sign phrase]
       [react/view])))
@@ -301,53 +296,56 @@
 
 (defn amount-item [prices wallet-currency amount amount-error display-symbol fee-display-symbol prices-loading?]
   (let [converted-value (* amount (get-in prices [(keyword display-symbol) (keyword (:code wallet-currency)) :price]))]
-    [list-item/list-item
-     {:type  :small
-      :title :t/send-request-amount
-      :error amount-error
-      :accessories [[react/view {:style {:flex-direction :row}}
-                     [react/nested-text {:style {:color colors/gray}}
-                      [{:style {:color colors/black}} (utils/format-decimals amount 6)]
-                      " "
-                      (or display-symbol fee-display-symbol)
-                      " • "]
-                     (if prices-loading?
-                       [react/small-loading-indicator]
-                       [react/text {:style {:color colors/black}} (i18n/format-currency converted-value (:code wallet-currency))])
-                     [react/text {:style {:color colors/gray}} (str " " (:code wallet-currency))]]]}]))
+    [quo/list-item
+     {:size      :small
+      :title     (i18n/label :t/send-request-amount)
+      ;; FIXME???
+      :error     amount-error
+      :accessory [react/view {:style {:flex-direction :row}}
+                  [react/nested-text {:style {:color colors/gray}}
+                   [{:style {:color colors/black}} (utils/format-decimals amount 6)]
+                   " "
+                   (or display-symbol fee-display-symbol)
+                   " • "]
+                  (if prices-loading?
+                    [react/small-loading-indicator]
+                    [react/text {:style {:color colors/black}} (i18n/format-currency converted-value (:code wallet-currency))])
+                  [react/text {:style {:color colors/gray}} (str " " (:code wallet-currency))]]}]))
 
 (views/defview fee-item [prices wallet-currency fee-display-symbol fee gas-error prices-loading?]
   (views/letsubs [{:keys [gas-price-loading? gas-loading?]} [:signing/edit-fee]]
     (let [converted-fee-value (* fee (get-in prices [(keyword fee-display-symbol) (keyword (:code wallet-currency)) :price]))]
-      [list-item/list-item
-       {:type        :small
-        :title       :t/network-fee
-        :error       (when-not (or gas-price-loading? gas-loading?) gas-error)
-        :disabled?   (or gas-price-loading? gas-loading?)
-        :accessories (if (or gas-price-loading? gas-loading?)
-                       [[react/small-loading-indicator]]
-                       [[react/view {:style {:flex-direction :row}}
-                         [react/nested-text {:style {:color colors/gray}}
-                          [{:style {:color colors/black}} (utils/format-decimals fee 6)]
-                          " "
-                          fee-display-symbol
-                          " • "]
-                         (if prices-loading?
-                           [react/small-loading-indicator]
-                           [react/text {:style {:color colors/black}} (i18n/format-currency converted-fee-value (:code wallet-currency))])
-                         [react/text {:style {:color colors/gray}} (str " " (:code wallet-currency))]]
-                        :chevron])
-        :on-press    #(re-frame/dispatch
-                       [:signing.ui/open-fee-sheet
-                        {:content        (fn [] [sheets/fee-bottom-sheet fee-display-symbol])
-                         :content-height 270}])}])))
+      [quo/list-item
+       {:size      :small
+        :title     (i18n/label :t/network-fee)
+        ;; FIXME
+        :error     (when-not (or gas-price-loading? gas-loading?) gas-error)
+        :disabled  (or gas-price-loading? gas-loading?)
+        :chevron   true
+        :accessory (if (or gas-price-loading? gas-loading?)
+                     [react/small-loading-indicator]
+                     [react/view {:style {:flex-direction :row}}
+                      [react/nested-text {:style {:color colors/gray}}
+                       [{:style {:color colors/black}} (utils/format-decimals fee 6)]
+                       " "
+                       fee-display-symbol
+                       " • "]
+                      (if prices-loading?
+                        [react/small-loading-indicator]
+                        [react/text {:style {:color colors/black}} (i18n/format-currency converted-fee-value (:code wallet-currency))])
+                      [react/text {:style {:color colors/gray}} (str " " (:code wallet-currency))]])
+        :on-press  #(re-frame/dispatch
+                     [:signing.ui/open-fee-sheet
+                      {:content        (fn [] [sheets/fee-bottom-sheet fee-display-symbol])
+                       :content-height 270}])}])))
 
 (views/defview network-item []
   (views/letsubs [network-name [:network-name]]
-    [list-item/list-item
-     {:title       :t/network
-      :type        :small
-      :accessories [[react/text network-name]]}]))
+    [quo/list-item
+     {:title          (i18n/label :t/network)
+      :size           :small
+      :accessory      :text
+      :accessory-text network-name}]))
 
 (views/defview sheet
   [{:keys [from contact amount token] :as tx}]
@@ -384,9 +382,9 @@
           [react/view {:align-items :center :margin-top 16 :margin-bottom 40}
            (if keycard-multiaccount?
              [sign-with-keycard-button amount-error gas-error]
-             [button/button {:on-press  #(re-frame/dispatch [:set :signing/sign {:type :password}])
-                             :disabled? (or amount-error gas-error)
-                             :label     :t/sign-with-password}])]])])))
+             [quo/button {:on-press  #(re-frame/dispatch [:set :signing/sign {:type :password}])
+                          :disabled  (or amount-error gas-error)}
+              (i18n/label  :t/sign-with-password)])]])])))
 
 (views/defview signing []
   (views/letsubs [tx [:signing/tx]]

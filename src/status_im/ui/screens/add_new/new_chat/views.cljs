@@ -5,7 +5,7 @@
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.list-item.views :as list-item]
+            [quo.core :as quo]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
@@ -16,10 +16,10 @@
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- render-row [row _ _]
-  [list-item/list-item
+  [quo/list-item
    {:title       (multiaccounts/displayed-name row)
     :icon        [chat-icon/contact-icon-contacts-tab row]
-    :accessories [:chevron]
+    :chevron true
     :on-press    #(re-frame/dispatch [:chat.ui/start-chat
                                       (:public-key row)
                                       {:navigation-reset? true}])}])

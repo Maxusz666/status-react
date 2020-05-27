@@ -8,7 +8,7 @@
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.utils.platform :as utils.platform]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.button :as button]
+            [quo.core :as quo]
             [status-im.ui.components.checkbox.view :as checkbox.views]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
@@ -147,13 +147,14 @@
        :auto-focus          true}]]]
    [react/view styles/bottom-container
     [react/view components.styles/flex]
-    [button/button
-     {:type      :next
-      :label     :t/continue
-      :disabled? (string/blank? @installation-name)
+    [quo/button
+     {:type      :secondary
+      :after     :main-icon/next
+      :disabled  (string/blank? @installation-name)
       :on-press  #(do
                     (re-frame/dispatch [:pairing.ui/set-name-pressed @installation-name])
-                    (reset! installation-name ""))}]]])
+                    (reset! installation-name ""))}
+     (i18n/label :t/continue)]]])
 
 (defn info-section []
   [react/view {:style styles/info-section}

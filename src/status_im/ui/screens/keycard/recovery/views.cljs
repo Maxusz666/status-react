@@ -6,7 +6,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.button :as button]
+            [quo.core :as quo]
             [status-im.ui.components.toolbar :as bottom-toolbar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.tooltip.views :as tooltip]
@@ -57,16 +57,16 @@
         [vector-icons/tiny-icon :tiny-icons/tiny-external {:color           colors/blue
                                                            :container-style {:margin-left 5}}]]]]]
 
-    [react/view {:align-items      :center
+    [react/view {:align-items     :center
                  :justify-content :center}
      [react/image {:source (resources/get-image :keycard)
                    :style  {:width  144
                             :height 114}}]]
 
     [react/view {:margin-bottom 50}
-     [button/button
-      {:on-press #(re-frame/dispatch [:keycard.recovery.intro.ui/begin-recovery-pressed])
-       :label    (i18n/label :t/keycard-recovery-intro-button-text)}]]]])
+     [quo/button
+      {:on-press #(re-frame/dispatch [:keycard.recovery.intro.ui/begin-recovery-pressed])}
+      (i18n/label :t/keycard-recovery-intro-button-text)]]]])
 
 (defview pin []
   (letsubs [pin [:hardwallet/pin]
@@ -156,10 +156,12 @@
                     :width      250}
         [tooltip/tooltip error]]]
       [bottom-toolbar/toolbar
-       {:right {:on-press  #(re-frame/dispatch [:keycard.onboarding.pair.ui/next-pressed])
-                :label     :t/pair-card
-                :disabled? (empty? pair-code)
-                :type      :next}}]]]))
+       {:right
+        [quo/button {:on-press  #(re-frame/dispatch [:keycard.onboarding.pair.ui/next-pressed])
+                     :disabled  (empty? pair-code)
+                     :type      :secondary
+                     :after     :main-icon/next}
+         (i18n/label :t/pair-card)]}]]]))
 
 (defview success []
   (letsubs [address [:hardwallet-multiaccount-wallet-address]
@@ -205,9 +207,8 @@
                      :ellipsize-mode  :middle}
          (utils.core/truncate-str address 14 true)]]]
       [react/view {:margin-bottom 50}
-       [button/button
-        {:on-press #(re-frame/dispatch [:keycard.recovery.success/finish-pressed])
-         :label    (i18n/label :t/finish)}]]]]))
+       [quo/button {:on-press #(re-frame/dispatch [:keycard.recovery.success/finish-pressed])}
+        (i18n/label :t/finish)]]]]))
 
 (defview no-key []
   (letsubs [card-state [:hardwallet-card-state]]
@@ -245,10 +246,10 @@
                          :style  {:width  165
                                   :height 110}}])]]]
       [react/view {:margin-bottom 50}
-       [button/button
-        {:on-press #(re-frame/dispatch [:keycard.recovery.no-key.ui/generate-key-pressed])
-         :label    (i18n/label :t/generate-new-key)}]
-       [button/button
-        {:type :secondary
-         :on-press #(re-frame/dispatch [:navigate-back])
-         :label (i18n/label :t/cancel)}]]]]))
+       [quo/button
+        {:on-press #(re-frame/dispatch [:keycard.recovery.no-key.ui/generate-key-pressed])}
+        (i18n/label :t/generate-new-key)]
+       [quo/button
+        {:type     :secondary
+         :on-press #(re-frame/dispatch [:navigate-back])}
+        (i18n/label :t/cancel)]]]]))

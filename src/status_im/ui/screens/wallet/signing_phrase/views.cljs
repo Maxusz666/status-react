@@ -3,7 +3,7 @@
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.components.button :as button]
+            [quo.core :as quo]
             [status-im.i18n :as i18n]
             [re-frame.core :as re-frame]))
 
@@ -20,16 +20,18 @@
       [react/text {:style {:color colors/gray :text-align :center}} (i18n/label :t/three-words-description)]]
      [react/view {:margin-vertical 16 :height 52 :background-color colors/gray-lighter :align-items :center :justify-content :center}
       [react/text phrase]]
-     [react/view {:margin-bottom 24 :margin-horizontal 24 :align-items :center}
+     [react/view {:padding-bottom     8
+                  :padding-horizontal 24
+                  :align-items        :center}
       [react/text {:style {:color colors/gray :text-align :center}} (i18n/label :t/three-words-description-2)]
       (when-not wallet-set-up-passed?
-        [button/button {:on-press #(re-frame/dispatch [:hide-popover])
-                        :style    {:margin-top 24}
-                        :label    :t/remind-me-later}])
-      [button/button {:on-press #(do
-                                   (when-not wallet-set-up-passed?
-                                     (re-frame/dispatch [:multiaccounts.ui/wallet-set-up-confirmed]))
-                                   (re-frame/dispatch [:hide-popover]))
-                      :style    {:margin-top 24}
-                      :type     :secondary
-                      :label    :t/ok-got-it}]]]))
+        [react/view {:style {:margin-top 16}}
+         [quo/button {:on-press #(re-frame/dispatch [:hide-popover])}
+          (i18n/label  :t/remind-me-later)]])
+      [react/view {:style {:padding-vertical 8}}
+       [quo/button {:on-press #(do
+                                 (when-not wallet-set-up-passed?
+                                   (re-frame/dispatch [:multiaccounts.ui/wallet-set-up-confirmed]))
+                                 (re-frame/dispatch [:hide-popover]))
+                    :type     :secondary}
+        (i18n/label :t/ok-got-it)]]]]))

@@ -5,7 +5,7 @@
             [reagent.core :as reagent]
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.button :as button]
+            [quo.core :as quo]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.checkbox.view :as checkbox]
             [status-im.ui.components.colors :as colors]
@@ -13,7 +13,6 @@
             [status-im.ui.components.keyboard-avoid-presentation
              :as
              kb-presentation]
-            [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
@@ -28,7 +27,7 @@
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- render-contact [row]
-  [list-item/list-item
+  [quo/list-item
    {:title (contact/format-name row)
     :icon  [chat-icon/contact-icon-contacts-tab row]}])
 
@@ -57,7 +56,7 @@
 (defn- toggle-item []
   (fn [allow-new-users? subs-name {:keys [public-key] :as contact} on-toggle]
     (let [contact-selected? @(re-frame/subscribe [subs-name public-key])]
-      [list-item/list-item
+      [quo/list-item
        {:title       (contact/format-name contact)
         :icon        [chat-icon/contact-icon-contacts-tab contact]
         :on-press    #(on-toggle allow-new-users? contact-selected? public-key)
@@ -91,10 +90,10 @@
     {:style (styles/no-contact-text)}
     no-contacts]
    (when-not platform/desktop?
-     [button/button
+     [quo/button
       {:type     :secondary
-       :on-press handle-invite-friends-pressed
-       :label    :t/invite-friends}])])
+       :on-press handle-invite-friends-pressed}
+      (i18n/label :t/invite-friends)])])
 
 (defn filter-contacts [filter-text contacts]
   (let [lower-filter-text (string/lower-case (str filter-text))
@@ -145,18 +144,19 @@
                            :enable-empty-sections        true}]]]
         [bottom-toolbar/toolbar
          {:show-border? true
-          :left         {:type                :previous
-                         :accessibility-label :previous-button
-                         :label               (i18n/label :t/back)
-                         :on-press            #(re-frame/dispatch [:navigate-back])}
-          :right        {:type                :secondary
-                         :container-style     {:padding-horizontal 16}
-                         :text-style          {:font-weight "500"}
-                         :accessibility-label :create-group-chat-button
-                         :label               (i18n/label :t/create-group-chat)
-                         :disabled?           (not save-btn-enabled?)
-                         :on-press            #(debounce/dispatch-and-chill [:group-chats.ui/create-pressed group-name]
-                                                                            300)}}]]])))
+          :left
+          [quo/button {:type                :secondary
+                       :before              :main-icon/back
+                       :accessibility-label :previous-button
+                       :on-press            #(re-frame/dispatch [:navigate-back])}
+           (i18n/label :t/back)]
+          :right
+          [quo/button {:type                :secondary
+                       :accessibility-label :create-group-chat-button
+                       :disabled            (not save-btn-enabled?)
+                       :on-press            #(debounce/dispatch-and-chill [:group-chats.ui/create-pressed group-name]
+                                                                          300)}
+           (i18n/label :t/create-group-chat)]}]]])))
 
 (defn searchable-contact-list []
   (let [search-value (reagent/atom nil)]
@@ -195,11 +195,13 @@
                              (dec constants/max-group-chat-participants))}]
      [bottom-toolbar/toolbar
       {:show-border? true
-       :right        {:type                :next
-                      :accessibility-label :next-button
-                      :label               (i18n/label :t/next)
-                      :disabled?           (zero? selected-contacts-count)
-                      :on-press            #(re-frame/dispatch [:navigate-to :new-group])}}]]))
+       :right
+       [quo/button {:type                :secondary
+                    :after               :main-icon/next
+                    :accessibility-label :next-button
+                    :disabled            (zero? selected-contacts-count)
+                    :on-press            #(re-frame/dispatch [:navigate-to :new-group])}
+        (i18n/label :t/next)]}]]))
 
 ;; Add participants to existing group chat
 (views/defview add-participants-toggle-list []
@@ -227,11 +229,12 @@
                                constants/max-group-chat-participants)}]
        [bottom-toolbar/toolbar
         {:show-border? true
-         :center       {:type                :secondary
-                        :accessibility-label :next-button
-                        :label               (i18n/label :t/add)
-                        :disabled?           (zero? selected-contacts-count)
-                        :on-press            #(re-frame/dispatch [:group-chats.ui/add-members-pressed])}}]])))
+         :center
+         [quo/button {:type                :secondary
+                      :accessibility-label :next-button
+                      :disabled            (zero? selected-contacts-count)
+                      :on-press            #(re-frame/dispatch [:group-chats.ui/add-members-pressed])}
+          (i18n/label :t/add)]}]])))
 
 (views/defview edit-group-chat-name []
   (views/letsubs [{:keys [name chat-id]} [:chats/current-chat]
@@ -253,14 +256,15 @@
      [react/view {:style {:flex 1}}]
      [bottom-toolbar/toolbar
       {:show-border? true
-       :center       {:type                :secondary
-                      :accessibility-label :done
-                      :label               (i18n/label :t/done)
-                      :disabled?           (and (<= (count @new-group-chat-name) 1)
-                                                (not (nil? @new-group-chat-name)))
-                      :on-press            #(cond
-                                              (< 1 (count @new-group-chat-name))
-                                              (re-frame/dispatch [:group-chats.ui/name-changed chat-id @new-group-chat-name])
+       :center
+       [quo/button {:type                :secondary
+                    :accessibility-label :done
+                    :disabled            (and (<= (count @new-group-chat-name) 1)
+                                              (not (nil? @new-group-chat-name)))
+                    :on-press            #(cond
+                                            (< 1 (count @new-group-chat-name))
+                                            (re-frame/dispatch [:group-chats.ui/name-changed chat-id @new-group-chat-name])
 
-                                              (nil? @new-group-chat-name)
-                                              (re-frame/dispatch [:navigate-back]))}}]]))
+                                            (nil? @new-group-chat-name)
+                                            (re-frame/dispatch [:navigate-back]))}
+        (i18n/label :t/done)]}]]))

@@ -5,7 +5,7 @@
             [status-im.ui.screens.wallet.collectibles.styles :as styles]
             [status-im.ui.screens.wallet.collectibles.views :as collectibles]
             [status-im.ui.components.svgimage :as svgimage]
-            [status-im.ui.components.list-item.views :as list-item]))
+            [quo.core :as quo]))
 
 (defmethod collectibles/render-collectible :CK [_ {:keys [id name bio image_url]}]
   [react/view {:style styles/details}
@@ -18,8 +18,8 @@
      [react/text {:number-of-lines 3
                   :ellipsize-mode :tail}
       bio]]]
-   [list-item/list-item
-    {:theme               :action
+   [quo/list-item
+    {:theme :accent
      :title               :t/view-cryptokitties
      :icon                :main-icons/address
      :accessibility-label :open-collectible-button

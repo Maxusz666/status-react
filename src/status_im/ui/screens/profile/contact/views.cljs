@@ -5,7 +5,6 @@
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.profile-header.view :as profile-header]
             [status-im.ui.components.react :as react]
@@ -50,13 +49,13 @@
                 ;                                          contact])
 
 (defn render-detail [{:keys [alias public-key ens-name] :as detail}]
-  [list-item/list-item
-   {:title    alias
-    :subtitle (utils/get-shortened-address public-key)
-    :icon     [chat-icon/contact-icon-contacts-tab detail]
+  [quo/list-item
+   {:title               alias
+    :subtitle            (utils/get-shortened-address public-key)
+    :icon                [chat-icon/contact-icon-contacts-tab detail]
     :accessibility-label :profile-public-key
-    :on-press #(re-frame/dispatch [:show-popover {:view :share-chat-key :address public-key :ens-name ens-name}])
-    :accessories [[icons/icon :main-icons/share styles/contact-profile-detail-share-icon]]}])
+    :on-press            #(re-frame/dispatch [:show-popover {:view :share-chat-key :address public-key :ens-name ens-name}])
+    :accessory           [icons/icon :main-icons/share styles/contact-profile-detail-share-icon]}])
 
 (defn profile-details-list-view [contact]
   [list/flat-list {:data                    [contact]
@@ -67,9 +66,10 @@
 (defn profile-details [contact]
   (when contact
     [react/view
-     [list-item/list-item {:type                      :section-header
-                           :title                     :t/profile-details
-                           :title-accessibility-label :profile-details}]
+     [quo/list-header
+      [quo/text {:accessibility-label :profile-details
+                 :color               :inherit}
+       (i18n/label :t/profile-details)]]
      [profile-details-list-view contact]]))
 
 (defn block-contact-action [{:keys [blocked? public-key]}]
@@ -116,13 +116,14 @@
 
           [react/view {:padding-top 12}
            (for [{:keys [label subtext accessibility-label icon action disabled?]} (actions contact)]
-             [list-item/list-item {:theme               :action
-                                   :title               label
-                                   :subtitle            subtext
-                                   :icon                icon
-                                   :accessibility-label accessibility-label
-                                   :disabled?           disabled?
-                                   :on-press            action}])]
+             (when label
+               [quo/list-item {:theme               :accent
+                               :title               label
+                               :subtitle            subtext
+                               :icon                icon
+                               :accessibility-label accessibility-label
+                               :disabled            disabled?
+                               :on-press            action}]))]
           [react/view styles/contact-profile-details-container
            [profile-details (cond-> contact
                               (and ens-verified name)

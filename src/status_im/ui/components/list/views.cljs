@@ -24,7 +24,7 @@
             [status-im.ui.components.checkbox.view :as checkbox]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.list-item.views :as list-item]
+            [quo.core :as quo]
             [status-im.ui.components.list.styles :as styles]
             [status-im.ui.components.radio :as radio]
             [status-im.ui.components.react :as react]
@@ -207,7 +207,7 @@
   `list-item/list-item` config map and `companent`."
   [item _]
   (cond
-    (map? item)    [list-item/list-item item]
+    (map? item)    [quo/list-item item]
     (vector? item) item
     (nil? item)    nil
     :else          [item]))

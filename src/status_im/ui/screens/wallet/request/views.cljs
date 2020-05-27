@@ -3,7 +3,8 @@
             [reagent.core :as reagent]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.eip681 :as eip681]
-            [status-im.ui.components.button :as button]
+            [quo.core :as quo]
+            [status-im.i18n :as i18n]
             [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [status-im.ui.components.react :as react])
@@ -32,7 +33,7 @@
      [react/view {:padding-top        12
                   :padding-horizontal 16
                   :padding-bottom     16}
-      [button/button
+      [quo/button
        {:on-press            #(re-frame/dispatch [:wallet.accounts/share address])
-        :label               :t/share-address
-        :accessibility-label :share-address-button}]]]))
+        :accessibility-label :share-address-button}
+       (i18n/label :t/share-address)]]]))

@@ -6,11 +6,10 @@
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.list-item.views :as list-item]
+            [quo.core :as quo]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.chat.photos :as photos]
-            [status-im.ui.components.button :as button]
             [status-im.ui.screens.hardwallet.pin.views :as pin.views]
             [status-im.ui.screens.keycard.styles :as styles]
             [status-im.constants :as constants]
@@ -48,9 +47,8 @@
                    :style       {:width  144
                                  :height 114}}]]
     [react/view {:margin-bottom 32}
-     [button/button
-      {:on-press #(re-frame/dispatch [:navigate-back])
-       :lable    (i18n/label :t/ok-got-it)}]]]])
+     [quo/button {:on-press #(re-frame/dispatch [:navigate-back])}
+      (i18n/label :t/ok-got-it)]]]])
 
 ;; NOTE(Ferossgp): Seems like it should be in popover
 (defn wrong []
@@ -80,9 +78,8 @@
                    :style  {:width  255
                             :height 124}}]]
     [react/view {:margin-bottom 32}
-     [button/button
-      {:on-press #(re-frame/dispatch [:navigate-back])
-       :label    (i18n/label :t/ok-got-it)}]]]])
+     [quo/button {:on-press #(re-frame/dispatch [:navigate-back])}
+      (i18n/label :t/ok-got-it)]]]])
 
 (defn unpaired []
   [react/view {:flex             1
@@ -113,14 +110,13 @@
     [react/view {:margin-bottom  32
                  :flex-direction :column
                  :align-items    :center}
-     [button/button
-      {:on-press #(re-frame/dispatch [:keycard.login.ui/pair-card-pressed])
-       :label    (i18n/label :t/pair-this-card)}]
+     [quo/button
+      {:on-press #(re-frame/dispatch [:keycard.login.ui/pair-card-pressed])}
+      (i18n/label :t/pair-this-card)]
      [react/view {:margin-top 27}
-      [button/button
-       {:type     :secondary
-        :on-press #(re-frame/dispatch [:keycard.login.ui/dismiss-pressed])
-        :label    (i18n/label :t/dismiss)}]]]]])
+      [quo/button {:type     :secondary
+                   :on-press #(re-frame/dispatch [:keycard.login.ui/dismiss-pressed])}
+       (i18n/label :t/dismiss)]]]]])
 
 ;; NOTE(Ferossgp): Seems like it should be in popover
 (defn not-keycard []
@@ -162,8 +158,8 @@
         [vector-icons/tiny-icon :tiny-icons/tiny-external {:color           colors/blue
                                                            :container-style {:margin-left 5}}]]]]]
     [react/view {:margin-bottom 32}
-     [button/button {:on-press #(re-frame/dispatch [:navigate-back])
-                     :label    (i18n/label :t/ok-got-it)}]]]])
+     [quo/button {:on-press #(re-frame/dispatch [:navigate-back])}
+      (i18n/label :t/ok-got-it)]]]])
 
 (defn photo [_ _]
   (reagent/create-class
@@ -368,18 +364,18 @@
                                            enter-step))}])
         (when-not hide-login-actions?
           [react/view {:margin-bottom (if small-screen? 25 32)}
-           [react/touchable-highlight
-            {:on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])}
-            [react/text {:style {:color colors/blue}}
-             (i18n/label :t/recover-key)]]])]])))
+           [quo/botton
+            {:on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
+             :type :secondary}
+            (i18n/label :t/recover-key)]])]])))
 
 (defn- more-sheet-content []
   [react/view {:flex 1}
-   [list-item/list-item
-    {:theme     :action
-     :title     :t/create-new-key
-     :icon      :main-icons/profile
-     :on-press  #(re-frame/dispatch [:multiaccounts.create.ui/get-new-key])}]])
+   [quo/list-item
+    {:theme    :accent
+     :title    (i18n/label :t/create-new-key)
+     :icon     :main-icons/profile
+     :on-press #(re-frame/dispatch [:multiaccounts.create.ui/get-new-key])}]])
 
 (def more-sheet
   {:content        more-sheet-content

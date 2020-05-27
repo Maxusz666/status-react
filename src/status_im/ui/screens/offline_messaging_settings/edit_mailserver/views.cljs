@@ -1,16 +1,17 @@
 (ns status-im.ui.screens.offline-messaging-settings.edit-mailserver.views
   (:require-macros [status-im.utils.views :as views])
-  (:require
-   [re-frame.core :as re-frame]
-   [status-im.ui.components.react :as react]
-   [status-im.i18n :as i18n]
-   [status-im.ui.components.colors :as colors]
-   [status-im.ui.components.icons.vector-icons :as vector-icons]
-   [status-im.ui.components.toolbar :as toolbar]
-   [status-im.ui.screens.offline-messaging-settings.edit-mailserver.styles :as styles]
-   [clojure.string :as string]
-   [quo.core :as quo]
-   [status-im.ui.components.topbar :as topbar]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.ui.components.react :as react]
+            [status-im.i18n :as i18n]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.toolbar :as toolbar]
+            [status-im.ui.components.text-input.view :as text-input]
+            [status-im.ui.screens.offline-messaging-settings.edit-mailserver.styles :as styles]
+            [status-im.ui.components.tooltip.views :as tooltip]
+            [clojure.string :as string]
+            [quo.core :as quo]
+            [status-im.ui.components.topbar :as topbar]))
 
 (defn connect-button [id]
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:mailserver.ui/connect-pressed id])}
@@ -77,7 +78,9 @@
              [connect-button id]
              [delete-button id]])]]
        [toolbar/toolbar
-        {:right {:type      :next
-                 :label     :t/save
-                 :disabled? (not is-valid?)
-                 :on-press  #(re-frame/dispatch [:mailserver.ui/save-pressed])}}]])))
+        {:right
+         [quo/button {:type      :secondary
+                      :after     :main-icon/next
+                      :disabled  (not is-valid?)
+                      :on-press  #(re-frame/dispatch [:mailserver.ui/save-pressed])}
+          (i18n/label :t/save)]}]])))

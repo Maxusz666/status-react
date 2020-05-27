@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.button :as button]
+            [quo.core :as quo]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.browser.site-blocked.styles :as styles])
@@ -23,9 +23,9 @@
       "#status"]
      (i18n/label :t/browsing-site-blocked-description2)]
     [react/view styles/buttons-container
-     [button/button {:on-press (fn []
-                                 (let [handler (if can-go-back?
-                                                 :browser.ui/previous-page-button-pressed
-                                                 :navigate-back)]
-                                   (re-frame/dispatch [handler])))
-                     :label    :t/browsing-site-blocked-go-back}]]]])
+     [quo/button {:on-press (fn []
+                              (let [handler (if can-go-back?
+                                              :browser.ui/previous-page-button-pressed
+                                              :navigate-back)]
+                                (re-frame/dispatch [handler])))}
+      (i18n/label :t/browsing-site-blocked-go-back)]]]])

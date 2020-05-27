@@ -60,8 +60,8 @@
     (fn [{:keys [background-color border-radius type disabled
                  on-press on-long-press on-press-start
                  accessibility-label]
-          :or   {border-radius 0
-                 type          :primary}}
+          :or  {border-radius 0
+                type          :primary}}
          & children]
       (let [{:keys [background foreground]}
             (type->animation {:type      type
@@ -76,8 +76,7 @@
                     [(animated/cond* (animated/eq long-timing 1)
                                      (animated/set long-pressed 1))
                      (animated/cond* long-pressed
-                                     [(animated/set long-pressed 0)
-                                      (animated/call* [] handle-long-press)
+                                     [(animated/call* [] handle-long-press)
                                       (animated/set state (:undetermined gesture-handler/states))])])}])
          [animated/code
           {:key  (str on-press on-long-press on-press-start)
@@ -87,11 +86,16 @@
                                       (animated/cond* (animated/and* (animated/eq state (:end gesture-handler/states))
                                                                      (animated/not* long-pressed))
                                                       [(animated/call* [] handle-press)
-                                                       (animated/set state (:undetermined gesture-handler/states))])])}]
+                                                       (animated/set state (:undetermined gesture-handler/states))])
+                                      (animated/cond* (animated/or* (animated/eq state (:end gesture-handler/states))
+                                                                    (animated/eq state (:cancelled gesture-handler/states))
+                                                                    (animated/eq state (:failed gesture-handler/states)))
+                                                      (animated/set long-pressed 0))])}]
          [gesture-handler/tap-gesture-handler
           (merge gesture-handler
                  {:shouldCancelWhenOutside true
-                  :enabled                 (not disabled)})
+                  :enabled                 (boolean (and (or on-press on-long-press on-press-start)
+                                                         (not disabled)))})
           [animated/view {:accessible          true
                           :accessibility-label accessibility-label}
            [animated/view {:style (merge absolute-fill

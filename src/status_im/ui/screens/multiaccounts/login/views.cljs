@@ -13,7 +13,8 @@
             [quo.core :as quo]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.toolbar :as toolbar]
-            [status-im.ui.components.topbar :as topbar])
+            [status-im.ui.components.topbar :as topbar]
+            [quo.core :as quo])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn login-multiaccount [^js password-text-input]
@@ -92,14 +93,18 @@
         [react/activity-indicator {:animating true}]
         [react/i18n-text {:style styles/processing :key :processing}]])
      [toolbar/toolbar
-      ;; TODO: Margins are not correct
       {:show-border? true
        :size         :large
-       :left         {:label    :t/access-key
-                      :type     :secondary
-                      :on-press #(do
-                                   (react/dismiss-keyboard!)
-                                   (re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed]))}
-       :right        {:label     :t/submit
-                      :disabled? (or (not sign-in-enabled?) processing)
-                      :on-press  #(login-multiaccount @password-text-input)}}]]))
+       :left
+       [quo/button
+        {:type     :secondary
+         :on-press #(do
+                      (react/dismiss-keyboard!)
+                      (re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed]))}
+        (i18n/label :t/access-key)]
+       :right
+       [react/view {:padding-horizontal 8}
+        [quo/button
+         {:disabled (or (not sign-in-enabled?) processing)
+          :on-press #(login-multiaccount @password-text-input)}
+         (i18n/label :t/submit)]]}]]))

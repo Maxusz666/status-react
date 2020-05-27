@@ -9,7 +9,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.browser.styles :as styles]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.button :as button])
+            [quo.core :as quo])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn hide-panel-anim
@@ -120,15 +120,16 @@
                                :justify-content   :center
                                :margin-horizontal 8
                                :margin-top        24}}
-           [react/view {:flex 1}
-            [button/button
-             {:theme    :red
+           [react/view {:flex              1
+                        :margin-horizontal 8}
+            [quo/button
+             {:theme    :negative
+              :on-press #(re-frame/dispatch [:browser.permissions.ui/dapp-permission-denied])}
+             (i18n/label :t/deny)]]
+           [react/view {:flex              1
+                        :margin-horizontal 8}
+            [quo/button
+             {:theme    :positive
               :style    {:margin-horizontal 8}
-              :on-press #(re-frame/dispatch [:browser.permissions.ui/dapp-permission-denied])
-              :label    (i18n/label :t/deny)}]]
-           [react/view {:flex 1}
-            [button/button
-             {:theme    :green
-              :style    {:margin-horizontal 8}
-              :on-press #(re-frame/dispatch [:browser.permissions.ui/dapp-permission-allowed])
-              :label    (i18n/label :t/allow)}]]]]]))))
+              :on-press #(re-frame/dispatch [:browser.permissions.ui/dapp-permission-allowed])}
+             (i18n/label :t/allow)]]]]]))))

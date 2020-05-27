@@ -5,7 +5,7 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.components.list-item.views :as list-item]
+            [quo.core :as quo]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.browser.accounts :as accounts]
@@ -18,28 +18,28 @@
   (re-frame/dispatch event))
 
 (defn list-item [{:keys [browser-id name url]}]
-  [list-item/list-item
+  [quo/list-item
    {:on-press      #(re-frame/dispatch [:browser.ui/browser-item-selected browser-id])
     :on-long-press (fn []
                      (re-frame/dispatch
                       [:bottom-sheet/show-sheet
                        {:content        (fn []
                                           [react/view {:flex 1}
-                                           [list-item/list-item
-                                            {:theme               :action
-                                             :title               :t/remove
+                                           [quo/list-item
+                                            {:theme               :accent
+                                             :title               (i18n/label :t/remove)
                                              :accessibility-label :remove-dapp-from-list
                                              :icon                :main-icons/delete
                                              :on-press            #(hide-sheet-and-dispatch [:browser.ui/remove-browser-pressed browser-id])}]
-                                           [list-item/list-item
-                                            {:theme               :action-destructive
-                                             :title               :t/clear-all
+                                           [quo/list-item
+                                            {:theme               :negative
+                                             :title               (i18n/label :t/clear-all)
                                              :accessibility-label :clear-all-dapps
                                              :icon                :main-icons/delete
                                              :on-press            #(hide-sheet-and-dispatch [:browser.ui/clear-all-browsers-pressed])}]])
                         :content-height 128}]))
     :title         name
-    :subtitle      (or url :t/dapp)
+    :subtitle      (or url (i18n/label :t/dapp))
     :icon          [react/view (styles/browser-icon-container)
                     [icons/icon :main-icons/browser {:color colors/gray}]]}])
 

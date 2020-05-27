@@ -1,12 +1,11 @@
 (ns status-im.ui.components.toolbar
   (:require [status-im.ui.components.react :as react]
-            [status-im.ui.components.button :as button]
             [status-im.ui.components.colors :as colors]))
 
 (defn toolbar-container [{:keys [show-border? size center?]
                           :or   {size :default}}]
   (merge {:align-items        :center
-          :padding-horizontal 16
+          :padding-horizontal 8
           :flex-direction     :row}
          (when center?
            {:justify-content :center})
@@ -23,15 +22,10 @@
     [react/view {:style (toolbar-container {:show-border? show-border?
                                             :center?      true
                                             :size         size})}
-     [button/button center]]
+     center]
     [react/view {:style (toolbar-container {:show-border? show-border?
                                             :center?      false
                                             :size         size})}
-     (when left
-       (if (vector? left)
-         left
-         [button/button left]))
-
+     (when left left)
      [react/view {:flex 1}]
-     (when right
-       [button/button right])]))
+     (when right right)]))

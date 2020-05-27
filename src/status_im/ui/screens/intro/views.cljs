@@ -7,7 +7,7 @@
             [status-im.privacy-policy.core :as privacy-policy]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.button :as button]
+            [quo.core :as quo]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.radio :as radio]
             [status-im.ui.components.react :as react]
@@ -99,21 +99,21 @@
     [react/view {:style styles/intro-view}
      [intro-viewer [{:image (resources/get-theme-image :chat)
                      :title :intro-title1
-                     :text :intro-text1}
+                     :text  :intro-text1}
                     {:image (resources/get-theme-image :wallet)
                      :title :intro-title2
-                     :text :intro-text2}
+                     :text  :intro-text2}
                     {:image (resources/get-theme-image :browser)
                      :title :intro-title3
                      :text :intro-text3}] window-height view-id]
      [react/view styles/buttons-container
-      [button/button {:button-style (assoc styles/bottom-button :margin-bottom 16)
-                      :on-press     #(re-frame/dispatch [:multiaccounts.create.ui/intro-wizard])
-                      :label        :t/get-started}]
-      [button/button {:style    (assoc styles/bottom-button :margin-bottom 24)
-                      :on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
-                      :label    :t/access-key
-                      :type     :secondary}]
+      [react/view {:style (assoc styles/bottom-button :margin-bottom 16)}
+       [quo/button {:on-press #(re-frame/dispatch [:multiaccounts.create.ui/intro-wizard])}
+        (i18n/label :t/get-started)]]
+      [react/view {:style (assoc styles/bottom-button :margin-bottom 24)}
+       [quo/button {:on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
+                    :type     :secondary}
+        (i18n/label :t/access-key)]]
       [react/nested-text
        {:style styles/welcome-text-bottom-note}
        (i18n/label :t/intro-privacy-policy-note1)
@@ -146,29 +146,20 @@
       (let [selected?  (= (:id acc) selected-id)
             public-key (get-in acc [:derived constants/path-whisper-keyword :public-key])]
         ^{:key public-key}
-        [react/touchable-highlight
-         {:accessibility-label (keyword (str "select-account-button-" accessibility-n))
-          :on-press            #(re-frame/dispatch [:intro-wizard/on-key-selected (:id acc)])}
-         [react/view {:style (styles/list-item selected?)}
-          [react/view {:style styles/list-item-body}
-           [react/image {:source      {:uri (identicon/identicon public-key)}
-                         :resize-mode :cover
-                         :style       styles/multiaccount-image}]
-           [react/view {:style {:padding-horizontal 16
-                                :flex               1}}
-            [react/text {:style           (assoc styles/wizard-text :text-align :left
-                                                 :color colors/black
-                                                 :line-height 22
-                                                 :font-weight "500")
-                         :number-of-lines 2
-                         :ellipsize-mode  :middle}
-             (gfy/generate-gfy public-key)]
-            [react/text {:style (assoc styles/wizard-text
-                                       :text-align :left
-                                       :line-height 22
-                                       :font-family "monospace")}
-             (utils/get-shortened-address public-key)]]]
-          [radio/radio selected?]]]))]])
+        [quo/list-item {:accessibility-label (keyword (str "select-account-button-" accessibility-n))
+                        :active              selected?
+                        :title               [quo/text {:number-of-lines 2
+                                                        :weight          :medium
+                                                        :ellipsize-mode  :middle}
+                                              (gfy/generate-gfy public-key)]
+                        :subtitle            [quo/text {:weight :monospace
+                                                        :color  :inherit}
+                                              (utils/get-shortened-address public-key)]
+                        :accessory           :radio
+                        :on-press            #(re-frame/dispatch [:intro-wizard/on-key-selected (:id acc)])
+                        :icon                [react/image {:source      {:uri (identicon/identicon public-key)}
+                                                           :resize-mode :cover
+                                                           :style       styles/multiaccount-image}]}]))]])
 
 (defn storage-entry [{:keys [type icon icon-width icon-height
                              image image-selected image-width image-height
@@ -283,32 +274,34 @@
                           :generate-key     :t/generate-a-key
                           :recovery-success :t/re-encrypt-key
                           :intro-wizard-title6)]
-           [react/view {:min-height 46 :max-height 46 :margin-bottom 16}
-            [button/button
-             {:style               styles/bottom-button
-              :disabled?           existing-account?
+           [react/view (:style (assoc styles/bottom-button :margin-bottom 16))
+            [quo/button
+             {:disabled            existing-account?
               :on-press            #(re-frame/dispatch [forward-action])
-              :accessibility-label :onboarding-next-button
-              :label               label-kw}]])
+              :accessibility-label :onboarding-next-button}
+             (i18n/label label-kw)]])
          (and (#{:create-code :confirm-code} step)
               (not encrypt-with-password?))
          [react/view {:margin-bottom 16}
-          [button/button {:style               styles/bottom-button
-                          :label               :t/encrypt-with-password
-                          :accessibility-label :encrypt-with-password-button
-                          :on-press            #(re-frame/dispatch [:intro-wizard/on-encrypt-with-password-pressed])
-                          :type                :secondary}]]
+          [quo/button {:style               styles/bottom-button
+                       :accessibility-label :encrypt-with-password-button
+                       :on-press            #(re-frame/dispatch [:intro-wizard/on-encrypt-with-password-pressed])
+                       :type                :secondary}
+           (i18n/label :t/encrypt-with-password)]]
 
          :else
          [toolbar/toolbar
           {:show-border? true
-           :right        {:on-press            #(re-frame/dispatch [forward-action])
-                          :label               :t/next
-                          :accessibility-label :onboarding-next-button
-                          :disabled?           (or processing?
-                                                   (and (= step :create-code) weak-password?)
-                                                   (and (= step :enter-phrase) next-button-disabled?))
-                          :type                :next}}])
+           :right
+           [quo/button
+            {:on-press            #(re-frame/dispatch [forward-action])
+             :accessibility-label :onboarding-next-button
+             :disabled            (or processing?
+                                      (and (= step :create-code) weak-password?)
+                                      (and (= step :enter-phrase) next-button-disabled?))
+             :type                :secondary
+             :after               :main-icons/next}
+            (i18n/label :t/next)]}])
 
    (when (or (= :generate-key step) (and processing? (= :recovery-success step)))
      [react/text {:style (assoc styles/wizard-text :margin-top 20 :margin-bottom 16)}

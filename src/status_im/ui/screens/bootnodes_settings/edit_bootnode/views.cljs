@@ -6,6 +6,7 @@
             [status-im.ui.components.toolbar :as toolbar]
             [quo.core :as quo]
             [status-im.ui.components.topbar :as topbar]
+            [quo.core :as quo]
             [status-im.ui.screens.bootnodes-settings.edit-bootnode.styles
              :as
              styles])
@@ -61,7 +62,10 @@
           (when id
             [delete-button id])]]
        [toolbar/toolbar
-        {:right {:type      :next
-                 :label     :t/save
-                 :disabled? (not is-valid?)
-                 :on-press  #(re-frame/dispatch [:bootnodes.ui/save-pressed])}}]])))
+        {:right
+         [quo/button
+          {:type      :secondary
+           :after     :main-icon/next
+           :disabled  (not is-valid?)
+           :on-press  #(re-frame/dispatch [:bootnodes.ui/save-pressed])}
+          (i18n/label :t/save)]}]])))

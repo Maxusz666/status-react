@@ -7,7 +7,7 @@
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.components.button :as button]
+            [quo.core :as quo]
             [status-im.ui.components.common.styles :as components.common.styles]
             [status-im.ui.components.toolbar :as toolbar]
             [clojure.string :as string]
@@ -41,10 +41,10 @@
                      :key   :your-data-belongs-to-you}]
    [react/i18n-text {:style styles/intro-description
                      :key   :your-data-belongs-to-you-description}]
-   [button/button
+   [quo/button
     {:style    styles/intro-button
-     :on-press #(re-frame/dispatch [:set-in [:my-profile/seed :step] :12-words])
-     :label    (i18n/label :t/ok-continue)}]])
+     :on-press #(re-frame/dispatch [:set-in [:my-profile/seed :step] :12-words])}
+    (i18n/label :t/ok-continue)]])
 
 (defn six-words [words]
   [react/view {:style styles/six-words-container}
@@ -75,10 +75,11 @@
        (i18n/label :t/your-recovery-phrase-description)]
       [react/view styles/twelve-words-spacer]]
      [toolbar/toolbar
-      {:right {:type     :next
-               :label    :t/next
-               :on-press #(re-frame/dispatch [:my-profile/enter-two-random-words])}}]]))
-
+      {:right
+       [quo/button {:type     :secondary
+                    :after    :main-icon/next
+                    :on-press #(re-frame/dispatch [:my-profile/enter-two-random-words])}
+        (i18n/label :t/next)]}]]))
 
 (defn next-handler [word entered-word step]
   (fn [_]
@@ -120,12 +121,15 @@
      (i18n/label :t/word-n-description {:number (inc idx)})]
     [react/view styles/twelve-words-spacer]]
    [toolbar/toolbar
-    {:right {:type      (if (= :second-word step) :secondary :next)
-             :label     (if (= :second-word step)
-                          :t/done
-                          :t/next)
-             :disabled? (string/blank? entered-word)
-             :on-press  (next-handler word entered-word step)}}]])
+    {:right
+     [quo/button (merge {:type      :secondary
+                         :disabled  (string/blank? entered-word)
+                         :on-press  (next-handler word entered-word step)}
+                        (when-not (= :second-word step)
+                          {:after :main-icon/next}))
+      (if (= :second-word step)
+        (i18n/label :t/done)
+        (i18n/label :t/next))]}]])
 
 (defn finish []
   [react/view {:style styles/finish-container}
@@ -136,9 +140,9 @@
     (i18n/label :t/you-are-all-set)]
    [react/text {:style styles/finish-description}
     (i18n/label :t/you-are-all-set-description)]
-   [button/button {:style    styles/finish-button
-                   :on-press #(re-frame/dispatch [:navigate-back])
-                   :label    :t/ok-got-it}]])
+   [quo/button {:style    styles/finish-button
+                :on-press #(re-frame/dispatch [:navigate-back])}
+    (i18n/label :t/ok-got-it)]])
 
 (defview backup-seed []
   (letsubs [current-multiaccount [:multiaccount]

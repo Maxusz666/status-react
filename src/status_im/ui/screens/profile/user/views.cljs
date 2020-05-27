@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.button :as button]
+            [quo.core :as quo]
             [status-im.ui.components.colors :as colors]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.common.common :as components.common]
@@ -14,7 +14,6 @@
             [status-im.ui.screens.profile.user.styles :as styles]
             [status-im.utils.platform :as platform]
             [status-im.utils.config :as config]
-            [quo.core :as quo]
             [status-im.utils.gfycat.core :as gfy]
             [status-im.utils.universal-links.core :as universal-links]
             [status-im.ui.components.profile-header.view :as profile-header])
@@ -52,12 +51,10 @@
                                             :font-family "monospace"}}
           address]]]
        [react/view styles/share-link-button
-        ;;TODO implement icon support
-        [button/button
+        [quo/button
          {:on-press            #(list-selection/open-share {:message link})
-          :label               :t/share-link
-                                        ;:icon                :main-icons/link
-          :accessibility-label :share-my-contact-code-button}]]])))
+          :accessibility-label :share-my-contact-code-button}
+         (i18n/label :t/share-link)]]])))
 
 (defn tribute-to-talk-item
   [opts]
@@ -73,103 +70,101 @@
    active-contacts-count mnemonic
    keycard-account? notifications-enabled?]
   [(cond-> {:title                (or (when registrar preferred-name)
-                                      :t/ens-usernames)
+                                      (i18n/label :t/ens-usernames))
             :subtitle             (if registrar
                                     (if preferred-name
-                                      :t/ens-your-your-name
-                                      :t/ens-usernames-details)
-                                    :t/ens-network-restriction)
+                                      (i18n/label :t/ens-your-your-name)
+                                      (i18n/label :t/ens-usernames-details))
+                                    (i18n/label :t/ens-network-restriction))
             :subtitle-max-lines   (if registrar
                                     (if preferred-name 1 2)
                                     1)
             :accessibility-label  :ens-button
             :container-margin-top 8
-            :disabled?            (not registrar)
-            :accessories          [:chevron]
+            :disabled             (not registrar)
+            :chevron              true
             :icon                 :main-icons/username}
      registrar
      (assoc :on-press #(re-frame/dispatch [:navigate-to :ens-main registrar])))
    ;; TODO replace this with list-item config map
    ;; left it as it is because not sure how to enable it for testing
    (when tribute-to-talk [tribute-to-talk-item tribute-to-talk])
-   {:title               :t/contacts
+   {:title               (i18n/label :t/contacts)
     :icon                :main-icons/in-contacts
     :accessibility-label :contacts-button
-    :accessories         [(if (pos? active-contacts-count)
-                            (str active-contacts-count)
-                            :t/none)
-                          :chevron]
+    :accessory           :text
+    :accessory-text      (if (pos? active-contacts-count)
+                           (str active-contacts-count)
+                           (i18n/label :t/none))
+    :chevron             true
     :on-press            #(re-frame/dispatch [:navigate-to :contacts-list])}
    {:type                 :section-header
     :accessibility-label  :settings-section
-    :container-margin-top 16
-    :title                :t/settings}
+    :title                (i18n/label :t/settings)}
    {:icon                :main-icons/security
-    :title               :t/privacy-and-security
+    :title               (i18n/label :t/privacy-and-security)
     :accessibility-label :privacy-and-security-settings-button
-    :accessories
-    [(when mnemonic
-       [components.common/counter {:size 22} 1]) :chevron]
+    :chevron             true
+    :accessory           (when mnemonic
+                           [components.common/counter {:size 22} 1])
     :on-press            #(re-frame/dispatch [:navigate-to :privacy-and-security])}
    {:icon                :main-icons/appearance
-    :title               :t/appearance
+    :title               (i18n/label :t/appearance)
     :accessibility-label :appearance-settings-button
-    :accessories         [:chevron]
+    :chevron             true
     :on-press            #(re-frame/dispatch [:navigate-to :appearance])}
    (when (and platform/android?
               config/local-notifications?)
      {:icon                :main-icons/notification
-      :title               :t/notifications
+      :title               (i18n/label :t/notifications)
       :accessibility-label :notifications-button
-      :on-press
-      #(re-frame/dispatch
-        [:multiaccounts.ui/notifications-switched (not notifications-enabled?)])
-      :accessories
-      [[react/switch
-        {:track-color #js {:true colors/blue :false nil}
-         :value       notifications-enabled?
-         :on-value-change
-         #(re-frame/dispatch
-           [:multiaccounts.ui/notifications-switched
-            (not notifications-enabled?)])
-         :disabled    false}]]})
+      :active              notifications-enabled?
+      :on-press            #(re-frame/dispatch
+                             [:multiaccounts.ui/notifications-switched (not notifications-enabled?)])
+      :accessory           :switch})
    {:icon                :main-icons/mobile
-    :title               :t/sync-settings
+    :title               (i18n/label :t/sync-settings)
     :accessibility-label :sync-settings-button
-    :accessories         [:chevron]
+    :chevron             true
     :on-press            #(re-frame/dispatch [:navigate-to :sync-settings])}
    (when (and (or platform/android?
                   config/keycard-test-menu-enabled?)
               config/hardwallet-enabled?
               keycard-account?)
      {:icon                :main-icons/keycard
-      :title               :t/keycard
+      :title               (i18n/label :t/keycard)
       :accessibility-label :keycard-button
-      :accessories         [:chevron]
+      :chevron             true
       :on-press            #(re-frame/dispatch [:navigate-to :keycard-settings])})
    {:icon                :main-icons/settings-advanced
-    :title               :t/advanced
+    :title               (i18n/label :t/advanced)
     :accessibility-label :advanced-button
-    :accessories         [:chevron]
+    :chevron             true
     :on-press            #(re-frame/dispatch [:navigate-to :advanced-settings])}
    {:icon                :main-icons/help
-    :title               :t/need-help
+    :title               (i18n/label :t/need-help)
     :accessibility-label :help-button
-    :accessories         [:chevron]
+    :chevron             true
     :on-press            #(re-frame/dispatch [:navigate-to :help-center])}
    {:icon                :main-icons/info
-    :title               :t/about-app
+    :title               (i18n/label :t/about-app)
     :accessibility-label :about-button
-    :accessories         [:chevron]
+    :chevron             true
     :on-press            #(re-frame/dispatch [:navigate-to :about-app])}
    {:icon                    :main-icons/log-out
-    :title                   :t/sign-out
+    :title                   (i18n/label :t/sign-out)
     :accessibility-label     :log-out-button
     :container-margin-top    24
     :container-margin-bottom 24
-    :theme                   :action-destructive
+    :theme                   :negative
     :on-press
     #(re-frame/dispatch [:multiaccounts.logout.ui/logout-pressed])}])
+
+(defn render-item [props]
+  (if (= (:type props) :section-header)
+    [react/view {:margin-top 16}
+     [quo/list-header (:title props)]]
+    [quo/list-item props]))
 
 (defn content []
   (let [{:keys [preferred-name
@@ -190,22 +185,28 @@
        [list.views/flat-list-generic-render-fn item])]))
 
 (defn my-profile []
-  (let [{:keys [public-key ens-verified preferred-name]
-         :as   account} @(re-frame/subscribe [:multiaccount])
-        on-share        #(re-frame/dispatch [:show-popover
-                                             {:view     :share-chat-key
-                                              :address  public-key
-                                              :ens-name preferred-name}])]
-    [react/view {:style {:flex 1}}
-     [quo/animated-header
-      {:right-accessories [{:icon     :main-icons/share
-                            :on-press on-share}]
-       :use-insets        true
-       :extended-header   (profile-header/extended-header
-                           {:on-press on-share
-                            :title    (multiaccounts/displayed-name account)
-                            :photo    (multiaccounts/displayed-photo account)
-                            :subtitle (if (and ens-verified public-key)
-                                        (gfy/generate-gfy public-key)
-                                        public-key)})}
-      [content]]]))
+  (fn []
+    (let [{:keys [public-key ens-verified preferred-name]
+           :as   account} @(re-frame/subscribe [:multiaccount])
+          on-share        #(re-frame/dispatch [:show-popover
+                                               {:view     :share-chat-key
+                                                :address  public-key
+                                                :ens-name preferred-name}])]
+      [react/view {:style {:flex 1}}
+       [quo/animated-header
+        {:right-accessories [{:icon     :main-icons/share
+                              :on-press on-share}]
+         :use-insets        true
+         :extended-header   (profile-header/extended-header
+                             {:on-press on-share
+                              :title    (multiaccounts/displayed-name account)
+                              :photo    (multiaccounts/displayed-photo account)
+                              :subtitle (if (and ens-verified public-key)
+                                          (gfy/generate-gfy public-key)
+                                          public-key)})}
+        [list.views/flat-list
+         {:data                         (filter (comp not nil?) (content))
+          :initial-num-to-render        3
+          :render-fn                    render-item
+          :key-fn                       (fn [_ idx] (str idx))
+          :keyboard-should-persist-taps :handled}]]])))

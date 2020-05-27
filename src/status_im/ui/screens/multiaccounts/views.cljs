@@ -10,6 +10,7 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.toolbar :as toolbar]
+            [quo.core :as quo]
             [status-im.ui.screens.multiaccounts.sheets :as sheets]
             [status-im.react-native.resources :as resources]))
 
@@ -59,8 +60,10 @@
        [list/flat-list {:data      (vals multiaccounts)
                         :key-fn    :address
                         :render-fn (fn [multiaccount] [multiaccount-view multiaccount])}]]
-      [toolbar/toolbar {:show-border? true
-                        :size         :large
-                        :center       {:on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
-                                       :type     :secondary
-                                       :label    (i18n/label :t/access-key)}}]]]))
+      [toolbar/toolbar
+       {:show-border? true
+        :size         :large
+        :center       [quo/button
+                       {:on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
+                        :type     :secondary}
+                       (i18n/label :t/access-key)]}]]]))

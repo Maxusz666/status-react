@@ -1,7 +1,7 @@
 (ns status-im.network.ui.network-details.views
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.button :as button]
+            [quo.core :as quo]
             [status-im.network.core :as network]
             [status-im.network.ui.styles :as st]
             [status-im.network.ui.views :as network-settings]
@@ -40,8 +40,5 @@
         (when custom?
           [react/view st/bottom-container
            [react/view components.styles/flex
-            [button/button {:label       :t/delete
-                            :style       st/delete-button
-                            ;; TODO: Inspect style of label
-                            :label-style st/delete-button-text
-                            :on-press    #(re-frame/dispatch [::network/delete-network-pressed id])}]]])]])))
+            [quo/button {:on-press    #(re-frame/dispatch [::network/delete-network-pressed id])}
+             (i18n/label :t/delete)]]])]])))

@@ -8,9 +8,6 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.i18n :as i18n]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.components.button :as button]
-            [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.hardwallet.pin.views :as pin.views]
@@ -26,7 +23,7 @@
      [react/view {:flex            1
                   :justify-content :space-between
                   :align-items     :center}
-      [react/view {:align-items    :center}
+      [react/view {:align-items :center}
        [react/view
         [react/view {:align-items     :center
                      :justify-content :center}
@@ -88,8 +85,8 @@
                                                   :padding-right 35}}
                               text]]]]))]
       [react/view {:margin-bottom 40}
-       [button/button {:label    (i18n/label :t/begin-set-up)
-                       :on-press #(re-frame/dispatch [:keycard.onboarding.intro.ui/begin-setup-pressed])}]]]]))
+       [quo/button {:on-press #(re-frame/dispatch [:keycard.onboarding.intro.ui/begin-setup-pressed])}
+        (i18n/label :t/begin-set-up)]]]]))
 
 (defview puk-code []
   (letsubs [secrets [:hardwallet-secrets]
@@ -176,9 +173,11 @@
           [react/text {:style {:color colors/gray}}
            (i18n/label :t/pair-code-explanation)]]]]
        [bottom-toolbar/toolbar
-        {:right {:type     :next
-                 :label    :t/next
-                 :on-press #(re-frame/dispatch [:keycard.onboarding.puk-code.ui/next-pressed])}}]]]]))
+        {:right
+         [quo/button {:type     :secondary
+                      :after    :main-icon/next
+                      :on-press #(re-frame/dispatch [:keycard.onboarding.puk-code.ui/next-pressed])}
+          (i18n/label :t/next)]}]]]]))
 
 (defview pin []
   (letsubs [pin [:hardwallet/pin]
@@ -282,15 +281,17 @@
                           :margin-left        12}
               [react/text {:style {:color colors/gray}}
                (str (inc i) ". ")]
-              [react/text {:accessibility-label  (str "word" i)}
+              [react/text {:accessibility-label (str "word" i)}
                word]])])]
        [react/view {:margin-top 24}
         [react/text {:style {:text-align :center}}
          (i18n/label :t/keycard-onboarding-recovery-phrase-description)]]]
       [bottom-toolbar/toolbar
-       {:right {:on-press #(re-frame/dispatch [:keycard.onboarding.recovery-phrase.ui/next-pressed])
-                :label    :t/confirm
-                :type     :next}}]]]))
+       {:right
+        [quo/button {:on-press #(re-frame/dispatch [:keycard.onboarding.recovery-phrase.ui/next-pressed])
+                     :type     :secondary
+                     :after    :main-icon/next}
+         (i18n/label :t/confirm)]}]]]))
 
 (defview recovery-phrase-confirm-word []
   (letsubs [word [:hardwallet-recovery-phrase-word]
@@ -340,11 +341,15 @@
                       :width      250}
           [tooltip/tooltip error]]]
         [bottom-toolbar/toolbar
-         {:left  {:on-press #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/back-pressed])
-                  :type     :previous
-                  :label    :t/back}
-          :right {:on-press            #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/next-pressed])
-                  :label               :t/next
-                  :accessibility-label :next
-                  :disabled?           (empty? input-word)
-                  :type                :next}}]]])))
+         {:left
+          [quo/button {:on-press #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/back-pressed])
+                       :type     :secondary
+                       :before   :main-icon/back}
+           (i18n/label :t/back)]
+          :right
+          [quo/button {:on-press            #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/next-pressed])
+                       :accessibility-label :next
+                       :disabled            (empty? input-word)
+                       :type                :secondary
+                       :after               :main-icon/next}
+           (i18n/label :t/next)]}]]])))
