@@ -6,7 +6,6 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.toolbar :as toolbar]
