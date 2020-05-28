@@ -4,16 +4,18 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.list.views :as list.views]
             [status-im.ui.components.react :as react]
+            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.i18n :as i18n]
+            [quo.core :as quo]
             [status-im.ui.components.topbar :as topbar])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn contacts-list-item [{:keys [public-key] :as contact}]
-  [list.views/big-list-item
-   ;;TODO this should be done in a subscription
-   {:text         (multiaccounts/displayed-name contact)
-    :image-source (multiaccounts/displayed-photo contact)
-    :action-fn    #(re-frame/dispatch [:chat.ui/show-profile public-key])}])
+  [quo/list-item
+   {:title    (multiaccounts/displayed-name contact)
+    :icon     [chat-icon.screen/contact-icon-contacts-tab contact]
+    :chevron  true
+    :on-press #(re-frame/dispatch [:chat.ui/show-profile public-key])}])
 
 (defview contacts-list []
   (letsubs [blocked-contacts-count [:contacts/blocked-count]
