@@ -43,14 +43,15 @@
        (if description-label
          [(i18n/label description-label {:bio-type-label bio-type-label})]
          description-text)))
-     [react/view {:padding-vertical 24}
-      [quo/button {:on-press #(re-frame/dispatch [on-confirm])}
-       (i18n/label ok-button-label
-                   {:bio-type-label bio-type-label})]]
-     [quo/button {:type     :secondary
-                  :on-press #(re-frame/dispatch [(or on-cancel :hide-popover)])}
-      (or cancel-button-label
-          (i18n/label :t/cancel))]]))
+     [react/view {:padding-vertical 16}
+      [react/view {:padding-vertical 8}
+       [quo/button {:on-press #(re-frame/dispatch [on-confirm])}
+        (i18n/label ok-button-label
+                    {:bio-type-label bio-type-label})]]
+      [quo/button {:type     :secondary
+                   :on-press #(re-frame/dispatch [(or on-cancel :hide-popover)])}
+       (or cancel-button-label
+           (i18n/label :t/cancel))]]]))
 
 (defn disable-password-saving-popover []
   (let [bio-label-type (get-bio-type-label)]
