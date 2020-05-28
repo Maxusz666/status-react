@@ -16,35 +16,24 @@
 
 (defn multiaccount-view
   [{:keys [key-uid photo-path name keycard-pairing]}]
-  [react/touchable-highlight
-   {:on-press #(re-frame/dispatch
-                [:multiaccounts.login.ui/multiaccount-selected key-uid])}
-   [react/view styles/multiaccount-view
-    [photos/photo photo-path {:size styles/multiaccount-image-size}]
-    [react/view styles/multiaccount-badge-text-view
-     [react/view {:flex-direction :row}
-      [react/text {:style          styles/multiaccount-badge-text
-                   :ellipsize-mode :middle
-                   :numberOfLines  1}
-       name]]
-     ;;TODO we don't have public key in multiaccounts
-     #_[react/text {:style styles/multiaccount-badge-pub-key-text}
-        (utils/get-shortened-address public-key)]]
-    [react/view {:flex 1}]
-    (when keycard-pairing
-      [react/view {:justify-content  :center
-                   :align-items      :center
-                   :margin-right     7
-                   :width            32
-                   :height           32
-                   :border-radius    24
-                   :background-color colors/white
-                   :border-width     1
-                   :border-color     colors/black-transparent}
-       [react/image {:source (resources/get-image :keycard-key)
-                     :style  {:width  11
-                              :height 19}}]])
-    [icons/icon :main-icons/next {:color colors/gray-transparent-40}]]])
+  [quo/list-item {:on-press  #(re-frame/dispatch
+                               [:multiaccounts.login.ui/multiaccount-selected key-uid])
+                  :icon      [photos/photo photo-path {:size styles/multiaccount-image-size}]
+                  :title     name
+                  :accessory (when keycard-pairing
+                               [react/view {:justify-content  :center
+                                            :align-items      :center
+                                            :margin-right     7
+                                            :width            32
+                                            :height           32
+                                            :border-radius    24
+                                            :background-color colors/white
+                                            :border-width     1
+                                            :border-color     colors/black-transparent}
+                                [react/image {:source (resources/get-image :keycard-key)
+                                              :style  {:width  11
+                                                       :height 19}}]])
+                  :chevron   true}])
 
 (defview multiaccounts []
   (letsubs [multiaccounts [:multiaccounts/multiaccounts]]
@@ -56,14 +45,14 @@
                                      :accessibility-label :your-keys-more-icon
                                      :handler             #(re-frame/dispatch [:bottom-sheet/show-sheet {:content sheets/actions-sheet}])}]}]
      [react/view styles/multiaccounts-container
-      [react/view styles/multiaccounts-list-container
-       [list/flat-list {:data      (vals multiaccounts)
-                        :key-fn    :address
-                        :render-fn (fn [multiaccount] [multiaccount-view multiaccount])}]]
+      [list/flat-list {:data                  (vals multiaccounts)
+                       :contentContainerStyle styles/multiaccounts-list-container
+                       :key-fn                :address
+                       :render-fn             multiaccount-view}]]
       [toolbar/toolbar
        {:show-border? true
         :size         :large
         :center       [quo/button
                        {:on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
                         :type     :secondary}
-                       (i18n/label :t/access-key)]}]]]))
+                       (i18n/label :t/access-key)]}]]))

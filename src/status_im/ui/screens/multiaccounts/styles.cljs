@@ -6,13 +6,12 @@
 
 (def multiaccounts-container
   {:flex               1
-   :margin-top         24
    :justify-content    :space-between})
 
 (def multiaccount-image-size 40)
 
 (def multiaccounts-list-container
-  {:flex             1
+  {:padding-top    24
    :padding-bottom 8})
 
 (def multiaccount-view
