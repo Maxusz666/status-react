@@ -25,10 +25,10 @@
    [react/view {:flex 1}
     [react/text {:style (merge {:typography :title-bold} (when small-screen? {:font-size 15}))}
      (i18n/label (or label :t/send-transaction))]]
-   [quo/button {:type     :secondary
-                :style    {:padding-horizontal 24}
-                :on-press on-cancel}
-    (i18n/label :t/cancel)]])
+   [react/view {:padding-horizontal 8}
+    [quo/button {:type     :secondary
+                 :on-press on-cancel}
+     (i18n/label :t/cancel)]]])
 
 (defn asset-selector [{:keys [request? token from]}]
   (let [{:keys [name icon color]} token]
@@ -146,7 +146,9 @@
                                                 :wallet.ui/sign-transaction-button-clicked-from-chat
                                                 :else
                                                 :wallet.ui/sign-transaction-button-clicked) tx])}
-          (if (and (not request?) from-chat? (not to-norm)) :t/wallet-send :t/next)]}]])))
+          (if (and (not request?) from-chat? (not to-norm))
+            (i18n/label :t/wallet-send)
+            (i18n/label :t/next))]}]])))
 
 (views/defview request-sheet [_]
   (views/letsubs [{:keys [amount-error amount-text from token sign-enabled?] :as tx}

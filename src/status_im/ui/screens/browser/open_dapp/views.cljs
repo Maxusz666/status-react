@@ -61,8 +61,7 @@
        (i18n/label :t/recent)]])])
 
 (views/defview select-account []
-  (views/letsubs [height [:dimensions/window-height]
-                  accounts [:accounts-without-watch-only]
+  (views/letsubs [accounts [:accounts-without-watch-only]
                   {:keys [name color] :as dapps-account} [:dapps-account]]
     [react/view {:position           :absolute
                  :z-index            2
@@ -71,17 +70,17 @@
                  :left               0
                  :right              0
                  :padding-horizontal 32}
-     [react/touchable-highlight
+     [quo/button
       {:accessibility-label :select-account
+       :type                :scale
        :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                                 {:content        (accounts/accounts-list accounts dapps-account)
-                                                  :content-height (/ height 2)}])}
+                                                 {:content (accounts/accounts-list accounts dapps-account)}])}
       [react/view (styles/dapps-account color)
        [icons/icon :main-icons/account {:color colors/white-persist}]
        [react/view {:flex-shrink 1}
         [react/text {:numberOfLines 1
                      :style         {:margin-horizontal 6 :color colors/white-persist
-                                     :typography :main-medium}}
+                                     :typography        :main-medium}}
          name]]
        [icons/icon :main-icons/dropdown {:color colors/white-transparent-persist}]]]]))
 

@@ -1,6 +1,7 @@
 (ns quo.components.list.item
   (:require [quo.react-native :as rn]
             [quo.platform :as platform]
+            [quo.haptic :as haptic]
             [quo.design-system.spacing :as spacing]
             [quo.design-system.colors :as colors]
             [quo.components.text :as text]
@@ -145,22 +146,34 @@
 (defn list-item
   [{:keys [theme accessory disabled subtitle-max-lines icon title
            subtitle active on-press on-long-press chevron size
-           accessory-text accessibility-label title-accessibility-label]
+           accessory-text accessibility-label title-accessibility-label
+           haptic-feedback haptic-type]
     :or   {subtitle-max-lines 1
-           theme              :main}}]
-  (let [theme (if disabled :disabled theme)
+           theme              :main
+           haptic-feedback    true
+           haptic-type        :selection}}]
+  (let [theme           (if disabled :disabled theme)
         {:keys [icon-color text-color icon-bg-color
                 active-background passive-background]}
-        (themes theme)]
+        (themes theme)
+        optional-haptic (fn []
+                          (when haptic-feedback
+                            (haptic/trigger haptic-type)))]
     [rn/view {:background-color (if (and (= accessory :radio) active)
                                   active-background
                                   passive-background)}
-     [animated/pressable {:type                :list-item
-                          :disabled            disabled
-                          :background-color    active-background
-                          :accessibility-label accessibility-label
-                          :on-press            on-press
-                          :on-long-press       on-long-press}
+     [animated/pressable (merge {:type                :list-item
+                                 :disabled            disabled
+                                 :background-color    active-background
+                                 :accessibility-label accessibility-label}
+                                (when on-press
+                                  {:on-press (fn []
+                                               (optional-haptic)
+                                               (on-press))})
+                                (when on-long-press
+                                  {:on-long-press (fn []
+                                                    (optional-haptic)
+                                                    (on-long-press))}))
       [container {:size size}
        [left-side {:icon-color                icon-color
                    :text-color                text-color

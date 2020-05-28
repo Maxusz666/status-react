@@ -15,8 +15,8 @@
           :flex-direction  :row}
          (case type
            :primary   (:base spacing/padding-horizontal)
-           :secondary (:tiny spacing/padding-horizontal)
-           :icon      {:padding-horizontal 2}
+           :secondary (:x-tiny spacing/padding-horizontal)
+           :icon      {}
            nil)))
 
 (defn content-style [type]
@@ -31,6 +31,9 @@
     :main     {:icon-color       (:icon-04 @colors/theme)
                :background-color (:interactive-02 @colors/theme)
                :text-color       (:text-04 @colors/theme)}
+    :icon     {:icon-color       (:icon-01 @colors/theme)
+               :background-color (:interactive-02 @colors/theme)
+               :text-color       (:text-01 @colors/theme)}
     :negative {:icon-color       (:negative-01 @colors/theme)
                :background-color (:negative-02 @colors/theme)
                :text-color       (:negative-01 @colors/theme)}
@@ -44,15 +47,18 @@
                :background-color (:ui-01 @colors/theme)
                :text-color       (:text-02 @colors/theme)}))
 
-(defn button [{:keys [on-press disabled type theme before after icon
+(defn button [{:keys [on-press disabled type theme before after
                       haptic-feedback haptic-type on-long-press on-press-start
-                      accessibility-label loading]
+                      accessibility-label loading border-radius]
                :or   {theme           :main
                       type            :primary
                       haptic-feedback true
+                      border-radius   8
                       haptic-type     :selection}}
               children]
-  (let [theme' (if disabled :disabled theme)
+  (let [theme' (cond
+                 disabled :disabled
+                 :else    theme)
         {:keys [icon-color background-color text-color]}
         (themes theme')
 
@@ -61,7 +67,7 @@
                             (haptic/trigger haptic-type)))]
 
     [animation/pressable (merge {:background-color    background-color
-                                 :border-radius       8
+                                 :border-radius       border-radius
                                  :type                type
                                  :disabled            disabled
                                  :accessibility-label accessibility-label}
@@ -89,7 +95,7 @@
                                 {:opacity 0}))}
        (cond
          (= type :icon)
-         [icons/icon icon {:color icon-color}]
+         [icons/icon children {:color icon-color}]
 
          (string? children)
          [text/text {:weight          :medium

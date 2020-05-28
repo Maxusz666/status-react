@@ -107,8 +107,9 @@
 (views/defview send-button []
   (views/letsubs [account [:multiaccount/default-account]]
     [react/view styles/send-button-container
-     [react/touchable-highlight
+     [quo/button
       {:accessibility-label :send-transaction-button
+       :type                :scale
        :on-press            #(re-frame/dispatch [:wallet/prepare-transaction-from-wallet account])}
       [react/view (styles/send-button)
        [icons/icon :main-icons/send {:color colors/white-persist}]]]]))

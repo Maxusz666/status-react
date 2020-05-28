@@ -124,10 +124,10 @@
 (views/defview plus-button []
   (views/letsubs [logging-in? [:multiaccounts/login]]
     [react/view styles/action-button-container
-     [react/touchable-highlight
-      {:accessibility-label :new-chat-button
-       :on-press            (when-not logging-in?
-                              #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))}
+     [quo/button {:type                :scale
+                  :accessibility-label :new-chat-button
+                  :on-press            (when-not logging-in?
+                                         #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))}
       [react/view (styles/action-button)
        (if logging-in?
          [react/activity-indicator {:color     colors/white-persist

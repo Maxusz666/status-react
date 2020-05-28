@@ -48,10 +48,10 @@
                        :contentContainerStyle styles/multiaccounts-list-container
                        :key-fn                :address
                        :render-fn             multiaccount-view}]]
-      [toolbar/toolbar
-       {:show-border? true
-        :size         :large
-        :center       [quo/button
-                       {:on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
-                        :type     :secondary}
-                       (i18n/label :t/access-key)]}]]))
+     [toolbar/toolbar
+      {:show-border? true
+       :size         :large
+       :center       [quo/button
+                      {:on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
+                       :type     :secondary}
+                      (i18n/label :t/access-key)]}]]))

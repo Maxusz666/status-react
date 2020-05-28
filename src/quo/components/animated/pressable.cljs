@@ -38,6 +38,12 @@
    :foreground {:transform [{:scale (animated/mix animation 1 scale-down-small)}]
                 :opacity   (animated/mix animation 1 opactiy)}})
 
+(defmethod type->animation :scale
+  [{:keys [animation]}]
+  {:background {:opacity 0}
+   :foreground {:transform [{:scale (animated/mix animation 1 scale-down-small)}]
+                :opacity   (animated/mix animation 1 opactiy)}})
+
 (def absolute-fill
   {:top      0
    :bottom   0

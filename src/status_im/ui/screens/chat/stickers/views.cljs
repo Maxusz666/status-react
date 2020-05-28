@@ -7,6 +7,7 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.colors :as colors]
             [status-im.i18n :as i18n]
+            [quo.core :as quo]
             [status-im.ui.screens.chat.stickers.styles :as styles]
             [status-im.ui.components.animation :as anim]
             [status-im.utils.contenthash :as contenthash]
@@ -20,13 +21,14 @@
 (def scroll-x (reagent/atom 0))
 
 (defn button [stickers-showing?]
-  [react/touchable-highlight
-   {:on-press (fn [_]
-                (re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-bottom-sheet (when-not stickers-showing? :stickers)}])
-                (when-not platform/desktop? (js/setTimeout #(react/dismiss-keyboard!) 100)))
-    :accessibility-label :show-stickers-icon}
-   [vector-icons/icon :main-icons/stickers {:container-style {:margin 14 :margin-right 6}
-                                            :color           (if stickers-showing? colors/blue colors/gray)}]])
+  [quo/button
+   {:on-press            (fn [_]
+                           (re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-bottom-sheet (when-not stickers-showing? :stickers)}])
+                           (when-not platform/desktop? (js/setTimeout #(react/dismiss-keyboard!) 100)))
+    :accessibility-label :show-stickers-icon
+    :type                :icon
+    :theme               (if stickers-showing? :main :disabled)}
+   :main-icons/stickers])
 
 (defn- no-stickers-yet-panel []
   [react/view {:style {:flex 1 :align-items :center :justify-content :center}}
