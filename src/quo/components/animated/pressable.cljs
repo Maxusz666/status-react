@@ -1,5 +1,6 @@
 (ns quo.components.animated.pressable
   (:require [quo.animated :as animated]
+            [quo.react :as react]
             [quo.gesture-handler :as gesture-handler]))
 
 (def long-press-duration 500)
@@ -52,22 +53,21 @@
    :position :absolute})
 
 (defn pressable []
-  (let [state           (animated/value (:undetermined gesture-handler/states))
-        active          (animated/eq state (:began gesture-handler/states))
-        gesture-handler (animated/on-gesture {:state state})
-        duration        (animated/cond* active time-in time-out)
-        long-pressed    (animated/value 0)
-        long-duration   (animated/cond* active long-press-duration 0)
-        long-timing     (animated/with-timing-transition active
-                          {:duration long-duration})
-        animation       (animated/with-timing-transition active
-                          {:duration duration
-                           :easing   (:ease-in animated/easings)})]
+  (let [long-press-ref       (react/create-ref)
+        state                (animated/value (:undetermined gesture-handler/states))
+        long-state           (animated/value (:undetermined gesture-handler/states))
+        active               (animated/eq state (:began gesture-handler/states))
+        gesture-handler      (animated/on-gesture {:state state})
+        long-gesture-handler (animated/on-gesture {:state long-state})
+        duration             (animated/cond* active time-in time-out)
+        animation            (animated/with-timing-transition active
+                               {:duration duration
+                                :easing   (:ease-in animated/easings)})]
     (fn [{:keys [background-color border-radius type disabled
                  on-press on-long-press on-press-start
                  accessibility-label]
-          :or  {border-radius 0
-                type          :primary}}
+          :or   {border-radius 0
+                 type          :primary}}
          & children]
       (let [{:keys [background foreground]}
             (type->animation {:type      type
@@ -78,35 +78,35 @@
         [:<>
          (when on-long-press
            [animated/code
-            {:exec (animated/block
-                    [(animated/cond* (animated/eq long-timing 1)
-                                     (animated/set long-pressed 1))
-                     (animated/cond* long-pressed
-                                     [(animated/call* [] handle-long-press)
-                                      (animated/set state (:undetermined gesture-handler/states))])])}])
+            {:exec (animated/on-change long-state
+                                       (animated/cond* (animated/eq long-state (:active gesture-handler/states))
+                                                       [(animated/call* [] handle-long-press)
+                                                        (animated/set state (:undetermined gesture-handler/states))]))}])
          [animated/code
           {:key  (str on-press on-long-press on-press-start)
            :exec (animated/on-change state
                                      [(animated/cond* (animated/eq state (:began gesture-handler/states))
                                                       (animated/call* [] handle-press-start))
-                                      (animated/cond* (animated/and* (animated/eq state (:end gesture-handler/states))
-                                                                     (animated/not* long-pressed))
-                                                      [(animated/call* [] handle-press)
-                                                       (animated/set state (:undetermined gesture-handler/states))])
-                                      (animated/cond* (animated/or* (animated/eq state (:end gesture-handler/states))
-                                                                    (animated/eq state (:cancelled gesture-handler/states))
-                                                                    (animated/eq state (:failed gesture-handler/states)))
-                                                      (animated/set long-pressed 0))])}]
+                                      (animated/cond* (animated/eq state (:end gesture-handler/states))
+                                                      [(animated/set state (:undetermined gesture-handler/states))
+                                                       (animated/call* [] handle-press)])])}]
          [gesture-handler/tap-gesture-handler
           (merge gesture-handler
                  {:shouldCancelWhenOutside true
+                  :wait-for                long-press-ref
                   :enabled                 (boolean (and (or on-press on-long-press on-press-start)
                                                          (not disabled)))})
           [animated/view {:accessible          true
                           :accessibility-label accessibility-label}
-           [animated/view {:style (merge absolute-fill
-                                         background
-                                         {:background-color background-color
-                                          :border-radius    border-radius})}]
-           (into [animated/view {:style foreground}]
-                 children)]]]))))
+           [gesture-handler/long-press-gesture-handler (merge long-gesture-handler
+                                                              {:enabled         (and (not disabled)
+                                                                                     (boolean on-long-press))
+                                                               :min-duration-ms long-press-duration
+                                                               :ref             long-press-ref})
+            [animated/view
+             [animated/view {:style (merge absolute-fill
+                                           background
+                                           {:background-color background-color
+                                            :border-radius    border-radius})}]
+             (into [animated/view {:style foreground}]
+                   children)]]]]]))))
