@@ -40,7 +40,8 @@
     [react/i18n-text {:style styles/welcome-text-description
                       :key   :welcome-to-status-description}]]
    [react/view {:align-items :center :margin-bottom 50}
-    [quo/button {:on-press            #(re-frame/dispatch [:navigate-reset :tabs])
+    [quo/button {:on-press #(re-frame/dispatch [:navigate-reset {:index               0
+                                                                 :routes [{:name :tabs}]}])
                  :accessibility-label :lets-go-button}
      (i18n/label :t/lets-go)]]])
 
