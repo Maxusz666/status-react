@@ -93,17 +93,9 @@
    (when dapp?
      [dapp-badge styles])])
 
-(defn contact-icon-contacts-tab [contact]
-  [contact-icon-view contact
-   {:container              styles/container-chat-list
-    :online-view-wrapper    styles/online-view-wrapper
-    :online-view            styles/online-view
-    :online-dot-left        styles/online-dot-left
-    :online-dot-right       styles/online-dot-right
-    :size                   40
-    :chat-icon              styles/chat-icon-chat-list
-    :default-chat-icon      (styles/default-chat-icon-chat-list colors/default-chat-color)
-    :default-chat-icon-text (styles/default-chat-icon-text 40)}])
+(defn contact-icon-contacts-tab [photo-path]
+  [react/view  styles/container-chat-list
+   [photos/photo photo-path {:size 40}]])
 
 (defn dapp-icon-permission [contact size]
   [contact-icon-view contact

@@ -14,13 +14,13 @@
   (re-frame/dispatch [:bottom-sheet/hide-sheet])
   (re-frame/dispatch event))
 
-(defn one-to-one-chat-actions [{:keys [chat-id]}]
+(defn one-to-one-chat-accents [{:keys [chat-id]}]
   (let [photo        @(re-frame/subscribe [:chats/photo-path chat-id])
         contact-name @(re-frame/subscribe [:contacts/contact-name-by-identity chat-id])]
     [react/view
      [quo/list-item
       {:theme               :accent
-       :icon                photo
+       :icon                [chat-icon/contact-icon-contacts-tab photo]
        :title               contact-name
        :subtitle            (i18n/label :t/view-profile)
        :accessibility-label :view-chat-details-button
@@ -51,7 +51,7 @@
        :icon                :main-icons/delete
        :on-press            #(hide-sheet-and-dispatch [:chat.ui/remove-chat-pressed chat-id])}]]))
 
-(defn public-chat-actions [{:keys [chat-id]}]
+(defn public-chat-accents [{:keys [chat-id]}]
   (let [link    (universal-links/generate-link :public-chat :external chat-id)
         message (i18n/label :t/share-public-chat-text {:link link})]
     [react/view
@@ -89,7 +89,7 @@
        :icon                :main-icons/delete
        :on-press            #(hide-sheet-and-dispatch [:chat.ui/remove-chat-pressed chat-id])}]]))
 
-(defn group-chat-actions []
+(defn group-chat-accents []
   (fn [{:keys [chat-id group-chat chat-name color]}]
     (let [{:keys [joined?]} @(re-frame/subscribe [:group-chat/inviter-info chat-id])]
       [react/view
@@ -130,9 +130,9 @@
 (defn actions [{:keys [public? group-chat]
                 :as current-chat}]
   (cond
-    public?    [public-chat-actions current-chat]
-    group-chat [group-chat-actions current-chat]
-    :else      [one-to-one-chat-actions current-chat]))
+    public?    [public-chat-accents current-chat]
+    group-chat [group-chat-accents current-chat]
+    :else      [one-to-one-chat-accents current-chat]))
 
 (defn options [chat-id message-id]
   (fn []
@@ -148,7 +148,7 @@
       {:theme               :negative
        :title               (i18n/label :t/delete-message)
        :icon                :main-icons/delete
-       :accessibility-label :delete-transaction-button
+       :accessibility-label :delete-transaccent-button
        :on-press            #(hide-sheet-and-dispatch [:chat.ui/delete-message chat-id message-id])}]]))
 
 (defn message-long-press [{:keys [content from outgoing] :as message}]
@@ -159,7 +159,7 @@
        (when-not outgoing
          [quo/list-item
           {:theme               :accent
-           :icon                photo
+           :icon                [chat-icon/contact-icon-contacts-tab photo]
            :title               contact-name
            :subtitle            (i18n/label :t/view-profile)
            :accessibility-label :view-chat-details-button
@@ -167,7 +167,7 @@
            :on-press            #(hide-sheet-and-dispatch  [:chat.ui/show-profile from])}])
        [quo/list-item
         {:theme    :accent
-         :title    :t/message-reply
+         :title    (i18n/label :t/message-reply)
          :icon     :main-icons/reply
          :on-press #(hide-sheet-and-dispatch [:chat.ui/reply-to-message message])}]
        [quo/list-item
@@ -193,7 +193,7 @@
       [react/view
        [quo/list-item
         {:theme               :accent
-         :icon                photo
+         :icon                [chat-icon/contact-icon-contacts-tab photo]
          :title               contact-name
          :subtitle            (i18n/label :t/view-profile)
          :accessibility-label :view-chat-details-button
@@ -205,43 +205,44 @@
     (let [{:keys [ens-name alias]} @(re-frame/subscribe [:contacts/contact-name-by-identity from])]
       [react/view
        (when-not outgoing
-         [list-item/list-item
-          {:theme               :action
-           :icon                (multiaccounts/displayed-photo {:identicon  identicon
-                                                                :public-key from})
-           :title               [view-profile {:name   (or ens-name alias)
-                                               :helper :t/view-profile}]
+         [quo/list-item
+          {:theme               :accent
+           :icon                [chat-icon/contact-icon-contacts-tab
+                                 (multiaccounts/displayed-photo {:identicon  identicon
+                                                                 :public-key from})]
+           :title               (or ens-name alias)
+           :subtitle            (i18n/label :t/view-profile)
            :accessibility-label :view-chat-details-button
-           :accessories         [:chevron]
+           :chevron             true
            :on-press            #(do
                                    (when from-preview?
                                      (re-frame/dispatch [:navigate-back]))
                                    (hide-sheet-and-dispatch  [:chat.ui/show-profile from]))}])
-       [list-item/list-item
-        {:theme    :action
-         :title    :t/message-reply
+       [quo/list-item
+        {:theme    :accent
+         :title    (i18n/label :t/message-reply)
          :icon     :main-icons/reply
          :on-press #(do
                       (when from-preview?
                         (re-frame/dispatch [:navigate-back]))
                       (hide-sheet-and-dispatch [:chat.ui/reply-to-message message]))}]
        ;; we have only base64 string for image, so we need to find a way how to copy it
-       #_[list-item/list-item
-          {:theme    :action
+       #_[quo/list-item
+          {:theme    :accent
            :title    :t/sharing-copy-to-clipboard
            :icon     :main-icons/copy
            :on-press (fn []
                        (re-frame/dispatch [:bottom-sheet/hide-sheet])
                        (react/copy-to-clipboard (:image content)))}]
-       [list-item/list-item
-        {:theme    :action
-         :title    :t/save
+       [quo/list-item
+        {:theme    :accent
+         :title    (i18n/label :t/save)
          :icon     :main-icons/download
          :on-press (fn []
                      (hide-sheet-and-dispatch [:chat.ui/save-image-to-gallery (:image content)]))}]
        ;; we have only base64 string for image, so we need to find a way how to share it
-       #_[list-item/list-item
-          {:theme    :action
+       #_[quo/list-item
+          {:theme    :accent
            :title    :t/sharing-share
            :icon     :main-icons/share
            :on-press (fn []

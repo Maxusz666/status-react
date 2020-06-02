@@ -122,6 +122,7 @@
   [rn/view {:style {:align-items    :center
                     :flex-direction :row}}
    [rn/view {:style (:tiny spacing/padding-horizontal)}
+    ;; FIXME(Ferossgp): Press on accessory should not handle press on list item
     (case accessory
       :radio    [radio/radio active]
       :checkbox [checkbox/checkbox {:checked? active}]

@@ -17,12 +17,13 @@
 
 (defn- render-row [row _ _]
   [quo/list-item
-   {:title       (multiaccounts/displayed-name row)
-    :icon        [chat-icon/contact-icon-contacts-tab row]
-    :chevron true
-    :on-press    #(re-frame/dispatch [:chat.ui/start-chat
-                                      (:public-key row)
-                                      {:navigation-reset? true}])}])
+   {:title    (multiaccounts/displayed-name row)
+    :icon     [chat-icon/contact-icon-contacts-tab
+               (multiaccounts/displayed-photo row)]
+    :chevron  true
+    :on-press #(re-frame/dispatch [:chat.ui/start-chat
+                                   (:public-key row)
+                                   {:navigation-reset? true}])}])
 
 (defn- icon-wrapper [color icon]
   [react/view

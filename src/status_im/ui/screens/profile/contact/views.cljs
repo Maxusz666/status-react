@@ -52,7 +52,8 @@
   [quo/list-item
    {:title               alias
     :subtitle            (utils/get-shortened-address public-key)
-    :icon                [chat-icon/contact-icon-contacts-tab detail]
+    :icon                [chat-icon/contact-icon-contacts-tab
+                          (multiaccounts/displayed-photo detail)]
     :accessibility-label :profile-public-key
     :on-press            #(re-frame/dispatch [:show-popover {:view :share-chat-key :address public-key :ens-name ens-name}])
     :accessory           [icons/icon :main-icons/share styles/contact-profile-detail-share-icon]}])

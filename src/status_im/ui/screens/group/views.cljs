@@ -7,9 +7,9 @@
             [status-im.i18n :as i18n]
             [quo.core :as quo]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.checkbox.view :as checkbox]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.contact.contact :as contact]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.keyboard-avoid-presentation
              :as
              kb-presentation]
@@ -29,7 +29,8 @@
 (defn- render-contact [row]
   [quo/list-item
    {:title (contact/format-name row)
-    :icon  [chat-icon/contact-icon-contacts-tab row]}])
+    :icon  [chat-icon/contact-icon-contacts-tab
+            (multiaccounts/displayed-photo row)]}])
 
 (defn- on-toggle [allow-new-users? checked? public-key]
   (cond
@@ -57,10 +58,12 @@
   (fn [allow-new-users? subs-name {:keys [public-key] :as contact} on-toggle]
     (let [contact-selected? @(re-frame/subscribe [subs-name public-key])]
       [quo/list-item
-       {:title       (contact/format-name contact)
-        :icon        [chat-icon/contact-icon-contacts-tab contact]
-        :on-press    #(on-toggle allow-new-users? contact-selected? public-key)
-        :accessories [[checkbox/checkbox {:checked? contact-selected?}]]}])))
+       {:title     (contact/format-name contact)
+        :icon      [chat-icon/contact-icon-contacts-tab
+                    (multiaccounts/displayed-photo  contact)]
+        :on-press  #(on-toggle allow-new-users? contact-selected? public-key)
+        :active    contact-selected?
+        :accessory :checkbox}])))
 
 (defn- group-toggle-contact [allow-new-users? contact]
   [toggle-item allow-new-users? :is-contact-selected? contact on-toggle])

@@ -13,7 +13,8 @@
 (defn contacts-list-item [{:keys [public-key] :as contact}]
   [quo/list-item
    {:title    (multiaccounts/displayed-name contact)
-    :icon     [chat-icon.screen/contact-icon-contacts-tab contact]
+    :icon     [chat-icon.screen/contact-icon-contacts-tab
+               (multiaccounts/displayed-photo contact)]
     :chevron  true
     :on-press #(re-frame/dispatch [:chat.ui/show-profile public-key])}])
 
