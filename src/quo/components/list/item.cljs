@@ -66,9 +66,7 @@
 
 (defn- icon-column [{:keys [icon icon-bg-color icon-color size]}]
   (when icon
-    (let [icon-size (if (= size :default)
-                      40
-                      36)]
+    (let [icon-size (size->icon-size size)]
       [rn/view {:style (:tiny spacing/padding-horizontal)}
        (cond
          (vector? icon)
@@ -87,7 +85,8 @@
   [{:keys [title text-color subtitle subtitle-max-lines
            title-accessibility-label size]}]
   [rn/view {:style (merge (:tiny spacing/padding-horizontal)
-                          {:justify-content :center})}
+                          {:justify-content :center
+                           :flex            1})}
    (cond
 
      (and title subtitle)

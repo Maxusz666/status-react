@@ -13,7 +13,6 @@
             [status-im.ui.screens.hardwallet.pin.views :as pin.views]
             [status-im.ui.screens.keycard.styles :as styles]
             [status-im.constants :as constants]
-            [status-im.ui.components.button :as button]
             [status-im.hardwallet.login :as hardwallet.login]
             [status-im.ui.screens.hardwallet.frozen-card.view :as frozen-card.view])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
@@ -177,16 +176,16 @@
 
 (defn access-is-reset [{:keys [hide-login-actions?]}]
   [react/view
-   {:style {:flex 1
+   {:style {:flex        1
             :align-items :center}}
    [react/view
-    {:style {:flex 1
+    {:style {:flex            1
              :align-items     :center
              :justify-content :center}}
     [react/view
      {:style
       {:background-color colors/green-transparent-10
-       :margin-bottom 32
+       :margin-bottom    32
        :width            40
        :height           40
        :align-items      :center
@@ -200,15 +199,13 @@
     [react/text (i18n/label :t/keycard-can-use-with-new-passcode)]]
    (when-not hide-login-actions?
      [react/view
-      {:style {:width 160
+      {:style {:width         160
                :margin-bottom 15}}
-      [button/button
-       {:type            :main
-        :style           {:align-self :stretch}
-        :container-style {:height 52}
-        :label           (i18n/label :t/open)
-        :on-press        #(re-frame/dispatch
-                           [::hardwallet.login/login-after-reset])}]])])
+      [react/view {:flex-direction :row
+                   :height         52}
+       [quo/button {:on-press #(re-frame/dispatch
+                                [::hardwallet.login/login-after-reset])}
+        (i18n/label :t/open)]]])])
 
 (defn frozen-card []
   [frozen-card.view/frozen-card
@@ -364,7 +361,7 @@
                                            enter-step))}])
         (when-not hide-login-actions?
           [react/view {:margin-bottom (if small-screen? 25 32)}
-           [quo/botton
+           [quo/button
             {:on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
              :type :secondary}
             (i18n/label :t/recover-key)]])]])))

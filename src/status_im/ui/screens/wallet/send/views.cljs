@@ -71,7 +71,8 @@
   (if from-chat?
     [quo/list-item {:title    (multiaccounts/displayed-name contact)
                     :subtitle (:address contact)
-                    :icon     (multiaccounts/displayed-photo contact)}]
+                    :icon     [chat-icon/contact-icon-contacts-tab
+                               (multiaccounts/displayed-photo contact)]}]
     [quo/list-item
      {:title               (utils/get-shortened-checksum-address
                             (if (string? contact) contact (:address contact)))

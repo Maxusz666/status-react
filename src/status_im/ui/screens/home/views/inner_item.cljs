@@ -97,16 +97,20 @@
 (defn message-timestamp [timestamp]
   (when timestamp
     [react/text {:style               styles/datetime-text
+                 :number-of-lines     1
                  :accessibility-label :last-message-time-text}
      ;;TODO (perf) move to event
      (string/upper-case (time/to-short-str timestamp))]))
 
 (defn unviewed-indicator [{:keys [unviewed-messages-count public?]}]
   (when (pos? unviewed-messages-count)
-    (if public?
-      [react/view {:style               styles/public-unread
-                   :accessibility-label :unviewed-messages-public}]
-      [badge/message-counter unviewed-messages-count])))
+    [react/view {:flex 1
+                 :justify-content :flex-end
+                 :align-items :flex-end}
+     (if public?
+       [react/view {:style               styles/public-unread
+                    :accessibility-label :unviewed-messages-public}]
+       [badge/message-counter unviewed-messages-count])]))
 
 (defn icon-style []
   {:color           colors/black
@@ -123,7 +127,6 @@
         home-item
         private-group? (and group-chat (not public?))
         public-group?  (and group-chat public?)]
-    ;; NOTE(Ferossgp): Change icon color to black in refactor PR
     [quo/list-item
      {:icon                      [chat-icon.screen/chat-icon-view-chat-list
                                   chat-id group-chat chat-name color online false]
