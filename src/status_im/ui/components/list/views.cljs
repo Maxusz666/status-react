@@ -18,11 +18,7 @@
 
   [section-list {:sections [{:title \"\" :key :unik :render-fn render :data {:title  \"\" :subtitle \"\"}}]}]
   "
-  (:require [clojure.string :as string]
-            [reagent.core :as reagent]
-            [status-im.i18n :as i18n]
-            [status-im.ui.components.checkbox.view :as checkbox]
-            [status-im.ui.components.colors :as colors]
+  (:require [reagent.core :as reagent]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [quo.core :as quo]
             [status-im.ui.components.list.styles :as styles]
@@ -67,7 +63,6 @@
    [react/image {:source (if (fn? source) (source) source)
                  :style  (merge styles/item-image image-style)}]])
 ;;TODO DEPRECATED, use status-im.ui.components.list-item.views
-;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn item-primary-only
   ([s] (item-primary-only nil s))
   ([{:keys [style] :as props} s]
@@ -75,12 +70,10 @@
                       (dissoc props :style))
     s]))
 ;;TODO DEPRECATED, use status-im.ui.components.list-item.views
-;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn item-content
   [& children]
   (into [react/view {:style styles/item-content-view}] (keep identity children)))
 
-;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 ;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn list-item-with-radio-button
   [{:keys [on-value-change style checked?] :as props} item]
@@ -90,56 +83,6 @@
           [radio/radio (:checked? props)]])])
 
 ;;TODO DEPRECATED, use status-im.ui.components.list-item.views
-(defn big-list-item
-  [{:keys [style text text-style subtext action-fn active? hide-chevron?
-           accessory-value text-color new? activity-indicator
-           accessibility-label icon icon-color image-source]
-    :or   {icon-color colors/blue
-           text-color colors/black
-           active? true
-           style {}}}]
-  {:pre [text
-         (or (nil? accessibility-label) (keyword? accessibility-label))]}
-  [react/touchable-highlight
-   {:on-press action-fn
-    :style style
-    :accessibility-label accessibility-label
-    :disabled (not active?)}
-   [react/view styles/settings-item
-    (cond
-      icon
-      [react/view (styles/settings-item-icon icon-color subtext)
-       [vector-icons/icon icon {:color icon-color}]]
-      image-source
-      [react/image {:source {:uri image-source}
-                    :style   styles/big-item-image}]
-      activity-indicator
-      [react/view (styles/settings-item-icon icon-color subtext)
-       [react/activity-indicator activity-indicator]])
-    (if subtext
-      [react/view {:style styles/settings-item-text-container}
-       [react/view {:style styles/settings-item-main-text-container}
-        (when new?
-          [react/view {:style styles/new-label}
-           [react/text {:style styles/new-label-text}
-            (string/upper-case (i18n/label :t/new))]])
-        [react/text {:style (merge (styles/settings-item-text text-color) text-style)}
-         text]]
-       [react/view {:style {:margin-top 2
-                            :justify-content :flex-start}}
-        [react/text {:style styles/settings-item-subtext
-                     :number-of-lines 2}
-         subtext]]]
-      [react/text {:style           (merge (styles/settings-item-text text-color) text-style)
-                   :number-of-lines 1}
-       text])
-    (when accessory-value
-      [react/text {:style           styles/settings-item-value
-                   :number-of-lines 1}
-       (str accessory-value)])
-    (when-not hide-chevron?
-      [vector-icons/icon :main-icons/next {:color colors/gray-transparent-40}])]])
-
 (defn- wrap-render-fn [f]
   (fn [^js data]
     (reagent/as-element (f (.-item data) (.-index data) (.-separators data)))))

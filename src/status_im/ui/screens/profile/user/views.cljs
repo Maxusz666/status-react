@@ -58,10 +58,10 @@
 
 (defn tribute-to-talk-item
   [opts]
-  [list.views/big-list-item
-   (merge {:text                (i18n/label :t/tribute-to-talk)
+  [quo/list-item
+   (merge {:title               (i18n/label :t/tribute-to-talk)
            :accessibility-label :notifications-button
-           :action-fn           #(re-frame/dispatch
+           :on-press            #(re-frame/dispatch
                                   [:tribute-to-talk.ui/menu-item-pressed])}
           opts)])
 

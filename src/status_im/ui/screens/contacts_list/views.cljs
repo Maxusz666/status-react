@@ -25,18 +25,20 @@
      [topbar/topbar {:title :t/contacts}]
      [react/scroll-view {:flex 1}
       (when (pos? blocked-contacts-count)
-        [list.views/big-list-item
-         {:style               {:margin-vertical 16}
-          :text                (i18n/label :t/blocked-users)
-          :icon                :main-icons/cancel
-          :icon-color          colors/red
-          :accessibility-label :blocked-users-list-button
-          :accessory-value     blocked-contacts-count
-          :action-fn           #(re-frame/dispatch [:navigate-to :blocked-users-list])}])
+        [react/view {:margin-vertical 16}
+         [quo/list-item
+          {:title               (i18n/label :t/blocked-users)
+           :icon                :main-icons/cancel
+           :theme               :negative
+           :accessibility-label :blocked-users-list-button
+           :chevron             true
+           :accessory           :text
+           :accessory-text      blocked-contacts-count
+           :on-press            #(re-frame/dispatch [:navigate-to :blocked-users-list])}]])
       [list.views/flat-list
-       {:data                      contacts
-        :key-fn                    :address
-        :render-fn                 contacts-list-item}]]]))
+       {:data      contacts
+        :key-fn    :address
+        :render-fn contacts-list-item}]]]))
 
 (defview blocked-users-list []
   (letsubs [blocked-contacts [:contacts/blocked]]

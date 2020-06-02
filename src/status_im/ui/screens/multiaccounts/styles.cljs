@@ -1,5 +1,4 @@
-(ns status-im.ui.screens.multiaccounts.styles
-  (:require [status-im.ui.components.colors :as colors]))
+(ns status-im.ui.screens.multiaccounts.styles)
 
 (def multiaccounts-view
   {:flex 1})

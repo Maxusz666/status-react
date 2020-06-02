@@ -14,7 +14,6 @@
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [quo.core :as quo]
-            [status-im.ui.components.list.views :as list]
             [status-im.ui.components.radio :as radio]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
@@ -504,22 +503,15 @@
                                :hide-chevron? true}]
         (when-not custom-domain?
           [react/view {:style {:margin-top 18}}
-           [list/big-list-item {:text          (i18n/label :t/ens-release-username)
-                                :text-color    (if releasable?
-                                                 colors/blue
-                                                 colors/gray)
-                                :text-style    {:font-weight "500"}
-                                :subtext       (when (and expiration-date
-                                                          (not releasable?))
-                                                 (i18n/label :t/ens-locked
-                                                             {:date expiration-date}))
-                                :icon          :main-icons/delete
-                                :icon-color    (if releasable?
-                                                 colors/blue
-                                                 colors/gray)
-                                :active?       releasable?
-                                :hide-chevron? true
-                                :action-fn     #(open-release-instructions-link!)}]])]]]]))
+           [quo/list-item {:title    (i18n/label :t/ens-release-username)
+                           :theme    :accent
+                           :disabled (not releasable?)
+                           :subtitle (when (and expiration-date
+                                                (not releasable?))
+                                       (i18n/label :t/ens-locked
+                                                   {:date expiration-date}))
+                           :icon     :main-icons/delete
+                           :on-press #(open-release-instructions-link!)}]])]]]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; WELCOME SCREEN
