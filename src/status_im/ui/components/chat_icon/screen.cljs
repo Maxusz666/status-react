@@ -134,14 +134,3 @@
      (if (and photo-path (seq photo-path))
        [photos/photo photo-path styles]
        [default-chat-icon name styles])]))
-
-(defn my-profile-icon [{multiaccount :multiaccount
-                        edit?        :edit?}]
-  (let [color colors/default-chat-color
-        size  64]
-    [profile-icon-view
-     (multiaccounts/displayed-photo multiaccount)
-     (multiaccounts/displayed-name multiaccount)
-     color
-     edit?
-     size {}]))

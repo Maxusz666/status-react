@@ -8,10 +8,6 @@
    :margin-horizontal 16
    :margin-vertical   15})
 
-(def bottom-container
-  {:flex-direction   :row
-   :padding-vertical 4})
-
 (def button-container
   {:margin-top        8
    :margin-bottom     16

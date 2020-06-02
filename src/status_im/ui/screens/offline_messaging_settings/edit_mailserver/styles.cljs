@@ -10,10 +10,6 @@
 (def qr-code
   {:padding 16})
 
-(def bottom-container
-  {:flex-direction   :row
-   :padding-vertical 4})
-
 (def button-container
   {:margin-top        8
    :margin-bottom     16

@@ -67,12 +67,6 @@
    [react/image {:source (if (fn? source) (source) source)
                  :style  (merge styles/item-image image-style)}]])
 ;;TODO DEPRECATED, use status-im.ui.components.list-item.views
-(defn item-primary
-  ([s] (item-primary nil s))
-  ([{:keys [style] :as props} s]
-   [react/text (merge {:style (merge styles/primary-text style)}
-                      (dissoc props :style))
-    s]))
 ;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn item-primary-only
   ([s] (item-primary-only nil s))
@@ -81,29 +75,12 @@
                       (dissoc props :style))
     s]))
 ;;TODO DEPRECATED, use status-im.ui.components.list-item.views
-(defn item-secondary
-  ([s] (item-secondary nil s))
-  ([{:keys [style]} s]
-   [react/text
-    {:style           (merge styles/secondary-text style)
-     :ellipsize-mode  :middle
-     :number-of-lines 1}
-    s]))
 ;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn item-content
   [& children]
   (into [react/view {:style styles/item-content-view}] (keep identity children)))
 
 ;;TODO DEPRECATED, use status-im.ui.components.list-item.views
-(defn list-item-with-checkbox
-  [{:keys [on-value-change style checked? on-long-press] :as props} item]
-  [react/touchable-highlight (merge {:on-press #(on-value-change (not checked?))}
-                                    (when on-long-press
-                                      {:on-long-press on-long-press}))
-   (conj item
-         [react/view {:style (merge style styles/item-checkbox)}
-          [checkbox/checkbox (dissoc props :on-value-change)]])])
-
 ;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn list-item-with-radio-button
   [{:keys [on-value-change style checked?] :as props} item]

@@ -13,21 +13,3 @@
 (def multiaccounts-list-container
   {:padding-top    24
    :padding-bottom 8})
-
-(def multiaccount-view
-  {:flex-direction     :row
-   :align-items        :center
-   :padding-horizontal 16
-   :height             64})
-
-(def multiaccount-badge-text-view
-  {:margin-left  16
-   :margin-right 31
-   :flex-shrink  1})
-
-(def multiaccount-badge-text
-  {:font-weight "500"})
-
-(def multiaccount-badge-pub-key-text
-  {:font-family "monospace"
-   :color       colors/gray})
