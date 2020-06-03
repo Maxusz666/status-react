@@ -7,6 +7,7 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [quo.core :as quo]
+            [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.chat.photos :as photos]
@@ -258,7 +259,7 @@
 (defview login-pin [{:keys [back-button-handler
                             hide-login-actions?
                             default-enter-step]
-                     :or {default-enter-step :login}}]
+                     :or   {default-enter-step :login}}]
   (letsubs [pin [:hardwallet/pin]
             enter-step [:hardwallet/pin-enter-step]
             status [:hardwallet/pin-status]
@@ -271,27 +272,27 @@
           ;; TODO(rasom): this hack fixes state mess when more then two
           ;; pin-view instances are used at the same time. Should be properly
           ;; refactored instead
-          enter-step (or enter-step default-enter-step)]
+          enter-step                 (or enter-step default-enter-step)]
       [react/view styles/container
        [topbar/topbar
         {:accessories [(when-not hide-login-actions?
                          {:icon    :main-icons/more
                           :handler #(re-frame/dispatch [:keycard.login.pin.ui/more-icon-pressed])})]
-         :content (cond
-                    (= :reset enter-step)
-                    [step-view 1]
+         :content     (cond
+                        (= :reset enter-step)
+                        [step-view 1]
 
-                    (= :reset-confirmation enter-step)
-                    [step-view 2]
+                        (= :reset-confirmation enter-step)
+                        [step-view 2]
 
-                    (and (= :puk enter-step)
-                         (not= :blocked-card status))
-                    [react/view
-                     {:style {:flex            1
-                              :justify-content :center
-                              :align-items     :center}}
-                     [react/text {:style {:color colors/gray}}
-                      (i18n/label :t/enter-puk-code)]])
+                        (and (= :puk enter-step)
+                             (not= :blocked-card status))
+                        [react/view
+                         {:style {:flex            1
+                                  :justify-content :center
+                                  :align-items     :center}}
+                         [react/text {:style {:color colors/gray}}
+                          (i18n/label :t/enter-puk-code)]])
          :navigation
          {:icon                :main-icons/arrow-left
           :accessibility-label :back-button
@@ -360,11 +361,11 @@
                                            #{:reset :reset-confirmation :puk}
                                            enter-step))}])
         (when-not hide-login-actions?
-          [react/view {:margin-bottom (if small-screen? 25 32)}
-           [quo/button
-            {:on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
-             :type :secondary}
-            (i18n/label :t/recover-key)]])]])))
+          [toolbar/toolbar
+           {:center [quo/button
+                     {:on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
+                      :type     :secondary}
+                     (i18n/label :t/recover-key)]}])]])))
 
 (defn- more-sheet-content []
   [react/view {:flex 1}

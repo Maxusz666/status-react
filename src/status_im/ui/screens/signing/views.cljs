@@ -170,23 +170,40 @@
       (str fiat-amount " " fiat-currency)]
      [separator]]))
 
+(defn terminal-button [{:keys [on-press theme disabled? height]} label]
+  [react/touchable-opacity {:disabled disabled?
+                            :on-press on-press
+                            :style    {:height           height
+                                       :border-radius    16
+                                       :flex             1
+                                       :justify-content  :center
+                                       :align-items      :center
+                                       :background-color (if (= theme :negative)
+                                                           colors/red-transparent-10
+                                                           colors/blue-light)}}
+   [quo/text {:size            :large
+              :number-of-lines 1
+              :color           (if (= theme :negative)
+                                 :negative
+                                 :link)
+              :weight          :medium}
+    label]])
+
 (defn signature-request-footer [keycard-step small-screen?]
   (fn []
-    [react/view {:style {:align-self :stretch}}
-     [react/view {:style {:height (if small-screen? 52 64)}}
-      ;; FIXME(Ferossgp): The height and border radius in Figma is different here
-      [quo/button {:disabled?  (= keycard-step :success)
-                   :text-style {:font-size (if small-screen? 18 20)}
-                   :style      {:align-self :stretch}
-                   :on-press   #(re-frame/dispatch [:show-popover {:view :transaction-data}])}
+    [react/view {:style {:padding-horizontal 16}}
+     [react/view {:style {:flex-direction :row}}
+      [terminal-button {:disabled? (= keycard-step :success)
+                        :height    (if small-screen? 52 64)
+                        :on-press  #(re-frame/dispatch [:show-popover {:view :transaction-data}])}
        (i18n/label :t/show-transaction-data)]]
-     [react/view {:margin-top 8
-                  :height     64 :margin-bottom 16}
-      [quo/button {:theme      :negative
-                   :disabled?  (= keycard-step :success)
-                   :style      {:align-self :stretch}
-                   :text-style {:font-size 20}
-                   :on-press   #(re-frame/dispatch [:signing.ui/cancel-is-pressed])}
+     [react/view {:margin-top     8
+                  :flex-direction :row
+                  :margin-bottom  16}
+      [terminal-button {:theme     :negative
+                        :disabled? (= keycard-step :success)
+                        :height    64
+                        :on-press  #(re-frame/dispatch [:signing.ui/cancel-is-pressed])}
        (i18n/label :t/decline)]]]))
 
 (defn signature-request [{:keys [formatted-data account fiat-amount fiat-currency keycard-step]}
