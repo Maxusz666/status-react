@@ -5,6 +5,7 @@
             [quo.design-system.spacing :as spacing]
             [quo.design-system.colors :as colors]
             [quo.components.text :as text]
+            [quo.components.tooltip :as tooltip]
             ;; FIXME:
             [status-im.ui.components.radio :as radio]
             [status-im.ui.components.checkbox.view :as checkbox]
@@ -125,7 +126,6 @@
     (case accessory
       :radio    [radio/radio active]
       :checkbox [checkbox/checkbox {:checked? active}]
-      ;; FIXME(Ferossgp): remove background active on switch type
       :switch   [rn/switch {:value           active
                             :track-color     #js {:true  (:interactive-01 @colors/theme)
                                                   :false nil}
@@ -142,12 +142,11 @@
                                     :resize-mode     :center
                                     :color           (:icon-02 @colors/theme)}]])])
 
-;; FIXME(Ferossgp): Inspect error, should we have it here?
 (defn list-item
   [{:keys [theme accessory disabled subtitle-max-lines icon title
            subtitle active on-press on-long-press chevron size
            accessory-text accessibility-label title-accessibility-label
-           haptic-feedback haptic-type]
+           haptic-feedback haptic-type error]
     :or   {subtitle-max-lines 1
            theme              :main
            haptic-feedback    true
@@ -188,4 +187,11 @@
                     :active         active
                     :on-press       on-press
                     :accessory-text accessory-text
-                    :accessory      accessory}]]]]))
+                    :accessory      accessory}]]]
+     (when error
+       [tooltip/tooltip (merge {:bottom-value 0}
+                               (when accessibility-label
+                                 {:accessibility-label (str (name accessibility-label) "-error")}))
+        [text/text {:color :negative
+                    :size  :small}
+         error]])]))
