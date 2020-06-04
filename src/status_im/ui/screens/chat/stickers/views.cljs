@@ -35,13 +35,12 @@
    [vector-icons/icon :stickers-icons/stickers-big {:color  colors/gray
                                                     :width  64
                                                     :height 64}]
-   [react/text {:style {:margin-top 8 :font-size 17}} (i18n/label :t/you-dont-have-stickers)]
-   [react/touchable-opacity {:on-press #(do
-                                          (re-frame/dispatch [:stickers/load-packs])
-                                          (re-frame/dispatch [:navigate-to :stickers]))}
-    [react/view {:margin-top 6 :height 44 :justify-content :center}
-     [react/text {:style {:color colors/blue}}
-      (i18n/label :t/get-stickers)]]]])
+   [react/text {:style {:margin-vertical 8 :font-size 17}} (i18n/label :t/you-dont-have-stickers)]
+   [quo/button {:type     :secondary
+                :on-press #(do
+                             (re-frame/dispatch [:stickers/load-packs])
+                             (re-frame/dispatch [:navigate-to :stickers]))}
+    (i18n/label :t/get-stickers)]])
 
 (defn- stickers-panel [stickers window-width]
   [react/view {:width window-width :flex 1}
