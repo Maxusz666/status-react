@@ -53,7 +53,7 @@
     [react/view
      [quo/list-item
       {:size        :small
-       :title       :t/wallet-asset
+       :title       (i18n/label :t/wallet-asset)
        :accessories
        [display-symbol
         (if icon
