@@ -23,7 +23,7 @@
                            (re-frame/dispatch [:chat.ui/set-chat-ui-props
                                                {:input-bottom-sheet (when-not images-showing? :images)}])
                            (when-not platform/desktop? (js/setTimeout #(react/dismiss-keyboard!) 100)))
-    :accessibility-label :show-stickers-icon
+    :accessibility-label :show-photo-icon
     :type                :icon
     :theme               (if images-showing? :main :disabled)}
    :main-icons/photo])
