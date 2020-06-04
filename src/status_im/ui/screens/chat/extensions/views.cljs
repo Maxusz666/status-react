@@ -12,7 +12,7 @@
 (defn button [showing?]
   [quo/button
    {:on-press            (fn [_]
-                           (re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-bottom-sheet (when-not showing? :stickers)}])
+                           (re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-bottom-sheet (when-not showing? :extensions)}])
                            (when-not platform/desktop? (js/setTimeout #(react/dismiss-keyboard!) 100)))
     :accessibility-label :show-extensions-icon
     :type                :icon
