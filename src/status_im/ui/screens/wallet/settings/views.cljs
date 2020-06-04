@@ -30,15 +30,15 @@
   (fn []
     [react/view
      [quo/list-item
-      {:theme :accent
-       :title    :t/token-details
+      {:theme    :accent
+       :title    (i18n/label :t/token-details)
        :icon     :main-icons/warning
        :on-press #(hide-sheet-and-dispatch
                    [:navigate-to :wallet-custom-token-details token])}]
      (when custom?
        [quo/list-item
-        {:theme :negative
-         :title    :t/remove-token
+        {:theme    :negative
+         :title    (i18n/label :t/remove-token)
          :icon     :main-icons/delete
          :on-press #(hide-sheet-and-dispatch
                      [:wallet.custom-token.ui/remove-pressed token])}])]))
@@ -57,7 +57,7 @@
                                        [list/item-image icon]
                                        [chat-icon/custom-icon-view-list name color])
                       :title         name
-                      :subtitle      symbol
+                      :subtitle      (clojure.core/name symbol)
                       :on-press      #(re-frame/dispatch
                                        [:wallet.settings/toggle-visible-token (keyword symbol) (not checked?)])
                       :on-long-press #(re-frame/dispatch
