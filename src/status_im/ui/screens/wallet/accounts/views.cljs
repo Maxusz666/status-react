@@ -68,7 +68,7 @@
 (defn render-asset [currency & [on-press]]
   (fn [{:keys [icon decimals amount color value] :as token}]
     [quo/list-item
-     (merge {:title               [:<>
+     (merge {:title               [quo/text {:weight :medium}
                                    [quo/text {:weight :inherit}
                                     (wallet.utils/format-amount amount decimals)]
                                    [quo/text {:color  :secondary

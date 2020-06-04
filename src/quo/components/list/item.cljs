@@ -92,24 +92,32 @@
 
      (and title subtitle)
      [:<>
-      [text/text {:weight              :medium
-                  :style               {:color text-color}
-                  :accessibility-label title-accessibility-label
-                  :ellipsize-mode      :tail
-                  :number-of-lines     1}
-       title]
-      [text/text {:weight          :regular
-                  :color           :secondary
-                  :ellipsize-mode  :tail
-                  :number-of-lines subtitle-max-lines}
-       subtitle]]
+      ;; FIXME(Ferossgp): ReactNative 63 will support view inside text on andrid, remove thess if when migrating
+      (if (string? title)
+        [text/text {:weight              :medium
+                    :style               {:color text-color}
+                    :accessibility-label title-accessibility-label
+                    :ellipsize-mode      :tail
+                    :number-of-lines     1}
+         title]
+        title)
+      (if (string? subtitle)
+        [text/text {:weight          :regular
+                    :color           :secondary
+                    :ellipsize-mode  :tail
+                    :number-of-lines subtitle-max-lines}
+         subtitle]
+        subtitle)]
 
-     title [text/text {:number-of-lines           1
-                       :style                     {:color text-color}
-                       :title-accessibility-label title-accessibility-label
-                       :ellipsize-mode            :tail
-                       :size                      (size->single-title-size size)}
-            title])])
+     title
+     (if (string? title)
+       [text/text {:number-of-lines           1
+                   :style                     {:color text-color}
+                   :title-accessibility-label title-accessibility-label
+                   :ellipsize-mode            :tail
+                   :size                      (size->single-title-size size)}
+        title]
+       title))])
 
 (defn left-side [props]
   [rn/view {:style {:flex-direction :row
@@ -119,28 +127,29 @@
    [title-column props]])
 
 (defn right-side [{:keys [chevron on-press active accessory accessory-text]}]
-  [rn/view {:style {:align-items    :center
-                    :flex-direction :row}}
-   [rn/view {:style (:tiny spacing/padding-horizontal)}
-    ;; FIXME(Ferossgp): Press on accessory should not handle press on list item
-    (case accessory
-      :radio    [radio/radio active]
-      :checkbox [checkbox/checkbox {:checked? active}]
-      :switch   [rn/switch {:value           active
-                            :track-color     #js {:true  (:interactive-01 @colors/theme)
-                                                  :false nil}
-                            :on-value-change on-press}]
-      :text     [text/text {:color           :secondary
-                            :number-of-lines 1}
-                 accessory-text]
-      accessory)]
-   (when (and chevron platform/ios?)
-     [rn/view {:style {:padding-right (:tiny spacing/spacing)}}
-      [icons/icon :main-icons/next {:container-style {:opacity         0.4
-                                                      :align-items     :center
-                                                      :justify-content :center}
-                                    :resize-mode     :center
-                                    :color           (:icon-02 @colors/theme)}]])])
+  (when (or chevron accessory)
+   [rn/view {:style {:align-items    :center
+                     :flex-direction :row}}
+    [rn/view {:style (:tiny spacing/padding-horizontal)}
+     ;; FIXME(Ferossgp): Press on accessory should not handle press on list item
+     (case accessory
+       :radio    [radio/radio active]
+       :checkbox [checkbox/checkbox {:checked? active}]
+       :switch   [rn/switch {:value           active
+                             :track-color     #js {:true  (:interactive-01 @colors/theme)
+                                                   :false nil}
+                             :on-value-change on-press}]
+       :text     [text/text {:color           :secondary
+                             :number-of-lines 1}
+                  accessory-text]
+       accessory)]
+    (when (and chevron platform/ios?)
+      [rn/view {:style {:padding-right (:tiny spacing/spacing)}}
+       [icons/icon :main-icons/next {:container-style {:opacity         0.4
+                                                       :align-items     :center
+                                                       :justify-content :center}
+                                     :resize-mode     :center
+                                     :color           (:icon-02 @colors/theme)}]])]))
 
 (defn list-item
   [{:keys [theme accessory disabled subtitle-max-lines icon title

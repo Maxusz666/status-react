@@ -95,18 +95,19 @@
      (render-subheader (:parsed-text content)))])
 
 (defn message-timestamp [timestamp]
-  (when timestamp
-    [react/text {:style               styles/datetime-text
-                 :number-of-lines     1
-                 :accessibility-label :last-message-time-text}
-     ;;TODO (perf) move to event
-     (string/upper-case (time/to-short-str timestamp))]))
+  [react/view
+   (when timestamp
+     [react/text {:style               styles/datetime-text
+                  :number-of-lines     1
+                  :accessibility-label :last-message-time-text}
+      ;;TODO (perf) move to event
+      (string/upper-case (time/to-short-str timestamp))])])
 
 (defn unviewed-indicator [{:keys [unviewed-messages-count public?]}]
   (when (pos? unviewed-messages-count)
-    [react/view {:flex 1
+    [react/view {:padding-left    16
                  :justify-content :flex-end
-                 :align-items :flex-end}
+                 :align-items     :flex-end}
      (if public?
        [react/view {:style               styles/public-unread
                     :accessibility-label :unviewed-messages-public}]
@@ -116,10 +117,9 @@
   {:color           colors/black
    :width           15
    :height          15
-   :container-style {:width           17
+   :container-style {:width           15
                      :height          15
-                     :padding-top     1
-                     :padding-right   2}})
+                     :margin-right   2}})
 
 (defn home-list-item [home-item]
   (let [{:keys [chat-id chat-name color online group-chat
@@ -130,32 +130,37 @@
     [quo/list-item
      {:icon                      [chat-icon.screen/chat-icon-view-chat-list
                                   chat-id group-chat chat-name color online false]
-      :title                     [:<>
-                                  (cond
-                                    private-group?
-                                    [icons/icon :main-icons/tiny-group (icon-style)]
-                                    public-group?
-                                    [icons/icon :main-icons/tiny-public (icon-style)]
-                                    :else
-                                    [icons/icon :main-icons/tiny-new-contact (icon-style)])
-                                  [quo/text {:color  :inherit
-                                             :weight :inherit
-                                             :size   :inherit}
-                                   (if group-chat
-                                     (utils/truncate-str chat-name 30)
-                                     ;; This looks a bit odd, but I would like only to subscribe
-                                     ;; if it's a one-to-one. If wrapped in a component styling
-                                     ;; won't be applied correctly.
-                                     @(re-frame/subscribe [:contacts/contact-name-by-identity chat-id]))]]
-      :title-accessibility-label :chat-name-text
-      :subtitle                  [message-content-text {:content      (:content last-message)
-                                                        :content-type (:content-type last-message)}]
-      :accessory                 [react/view {:style {:justify-content :space-between
-                                                      :align-items     :flex-end
-                                                      :flex            1}}
+      :title                     [react/view {:flex-direction :row
+                                              :flex           1}
+                                  [react/view {:flex-direction :row
+                                               :flex           1
+                                               :padding-right  16
+                                               :align-items    :center}
+                                   (cond
+                                     private-group?
+                                     [icons/icon :main-icons/tiny-group (icon-style)]
+                                     public-group?
+                                     [icons/icon :main-icons/tiny-public (icon-style)]
+                                     :else
+                                     [icons/icon :main-icons/tiny-new-contact (icon-style)])
+                                   [quo/text {:weight              :medium
+                                              :accessibility-label :chat-name-text
+                                              :ellipsize-mode      :tail
+                                              :number-of-lines     1}
+                                    (if group-chat
+                                      (utils/truncate-str chat-name 30)
+                                      ;; This looks a bit odd, but I would like only to subscribe
+                                      ;; if it's a one-to-one. If wrapped in a component styling
+                                      ;; won't be applied correctly.
+                                      @(re-frame/subscribe [:contacts/contact-name-by-identity chat-id]))]]
                                   [message-timestamp (if (pos? (:whisper-timestamp last-message))
                                                        (:whisper-timestamp last-message)
-                                                       timestamp)]
+                                                       timestamp)]]
+      :title-accessibility-label :chat-name-text
+      :subtitle                  [react/view {:flex-direction :row}
+                                  [react/view {:flex 1}
+                                   [message-content-text {:content      (:content last-message)
+                                                          :content-type (:content-type last-message)}]]
                                   [unviewed-indicator home-item]]
       :on-press                  #(do
                                     (re-frame/dispatch [:dismiss-keyboard])
