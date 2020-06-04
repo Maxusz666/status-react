@@ -128,28 +128,28 @@
 
 (defn right-side [{:keys [chevron on-press active accessory accessory-text]}]
   (when (or chevron accessory)
-   [rn/view {:style {:align-items    :center
-                     :flex-direction :row}}
-    [rn/view {:style (:tiny spacing/padding-horizontal)}
+    [rn/view {:style {:align-items    :center
+                      :flex-direction :row}}
+     [rn/view {:style (:tiny spacing/padding-horizontal)}
      ;; FIXME(Ferossgp): Press on accessory should not handle press on list item
-     (case accessory
-       :radio    [radio/radio active]
-       :checkbox [checkbox/checkbox {:checked? active}]
-       :switch   [rn/switch {:value           active
-                             :track-color     #js {:true  (:interactive-01 @colors/theme)
-                                                   :false nil}
-                             :on-value-change on-press}]
-       :text     [text/text {:color           :secondary
-                             :number-of-lines 1}
-                  accessory-text]
-       accessory)]
-    (when (and chevron platform/ios?)
-      [rn/view {:style {:padding-right (:tiny spacing/spacing)}}
-       [icons/icon :main-icons/next {:container-style {:opacity         0.4
-                                                       :align-items     :center
-                                                       :justify-content :center}
-                                     :resize-mode     :center
-                                     :color           (:icon-02 @colors/theme)}]])]))
+      (case accessory
+        :radio    [radio/radio active]
+        :checkbox [checkbox/checkbox {:checked? active}]
+        :switch   [rn/switch {:value           active
+                              :track-color     #js {:true  (:interactive-01 @colors/theme)
+                                                    :false nil}
+                              :on-value-change on-press}]
+        :text     [text/text {:color           :secondary
+                              :number-of-lines 1}
+                   accessory-text]
+        accessory)]
+     (when (and chevron platform/ios?)
+       [rn/view {:style {:padding-right (:tiny spacing/spacing)}}
+        [icons/icon :main-icons/next {:container-style {:opacity         0.4
+                                                        :align-items     :center
+                                                        :justify-content :center}
+                                      :resize-mode     :center
+                                      :color           (:icon-02 @colors/theme)}]])]))
 
 (defn list-item
   [{:keys [theme accessory disabled subtitle-max-lines icon title

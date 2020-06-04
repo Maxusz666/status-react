@@ -5,7 +5,6 @@
             [quo.components.safe-area :as safe-area]
             [quo.design-system.colors :as colors]
             [quo.platform :as platform]
-            [quo.react-native :as rn]
             [reagent.core :as reagent]))
 
 (defn header-wrapper-style [{:keys [value offset]}]
