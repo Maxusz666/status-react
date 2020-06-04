@@ -18,7 +18,8 @@
                    :outputRange [0 4]
                    :extrapolate (:clamp animated/extrapolate)})})
    (when (and offset platform/ios?)
-     {:shadow-opacity (animated/interpolate
+     {:z-index        2
+      :shadow-opacity (animated/interpolate
                        value
                        {:inputRange  [0 offset]
                         :outputRange [0 1]
@@ -66,8 +67,9 @@
                          :title-align     :left}
                         (dissoc props :extended-header))]]
        (into [animated/scroll-view {:on-scroll           on-scroll
-                                    :scrollEventThrottle 1}
-              [rn/view {:pointer-events :box-none}
+                                    :style               {:z-index 1}
+                                    :scrollEventThrottle 16}
+              [animated/view {:pointer-events :box-none}
                [animated/view {:pointer-events :box-none
                                :on-layout      on-layout}
                 [extended-header {:value     y
