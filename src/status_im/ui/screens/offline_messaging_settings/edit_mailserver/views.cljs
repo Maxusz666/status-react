@@ -3,8 +3,6 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.screens.offline-messaging-settings.edit-mailserver.styles :as styles]
             [clojure.string :as string]
@@ -26,14 +24,6 @@
                  :accessibility-label :mailserver-delete-button}
      [react/text {:style styles/button-label}
       (i18n/label :t/delete)]]]])
-
-(def qr-code
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
-                                                             {:title (i18n/label :t/add-mailserver)
-                                                              :handler :mailserver.callback/qr-code-scanned}])
-                              :style    styles/qr-code}
-   [react/view
-    [vector-icons/icon :main-icons/qr {:color colors/blue}]]])
 
 (views/defview edit-mailserver []
   (views/letsubs [mailserver [:mailserver.edit/mailserver]
@@ -62,14 +52,18 @@
           [quo/text-input
            {:label          (i18n/label :t/mailserver-address)
             :placeholder    (i18n/label :t/mailserver-format)
-            :content        qr-code
             :default-value  url
+            :show-cancel    false
             :on-change-text #(re-frame/dispatch [:mailserver.ui/input-changed :url %])
             :bottom-value   0
             :error          (when (and (not (string/blank? url))
                                        invalid-url?)
                               (i18n/label :t/invalid-format
-                                          {:format (i18n/label :t/mailserver-format)}))}]]
+                                          {:format (i18n/label :t/mailserver-format)}))
+            :after          {:icon     :main-icons/qr
+                             :on-press #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
+                                                            {:title   (i18n/label :t/add-mailserver)
+                                                             :handler :mailserver.callback/qr-code-scanned}])}}]]
          (when (and id
                     (not connected?))
            [react/view
@@ -77,8 +71,8 @@
             [delete-button id]])]]
        [toolbar/toolbar
         {:right
-         [quo/button {:type      :secondary
-                      :after     :main-icon/next
-                      :disabled  (not is-valid?)
-                      :on-press  #(re-frame/dispatch [:mailserver.ui/save-pressed])}
+         [quo/button {:type     :secondary
+                      :after    :main-icon/next
+                      :disabled (not is-valid?)
+                      :on-press #(re-frame/dispatch [:mailserver.ui/save-pressed])}
           (i18n/label :t/save)]}]])))
