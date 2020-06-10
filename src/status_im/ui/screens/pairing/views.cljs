@@ -8,7 +8,6 @@
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.utils.platform :as utils.platform]
             [status-im.ui.components.styles :as components.styles]
-            [quo.core :as quo]
             [status-im.ui.components.checkbox.view :as checkbox.views]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]

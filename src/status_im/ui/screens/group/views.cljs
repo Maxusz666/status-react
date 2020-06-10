@@ -5,7 +5,6 @@
             [reagent.core :as reagent]
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
-            [quo.core :as quo]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.contact.contact :as contact]

@@ -7,7 +7,6 @@
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.ui.components.icons.vector-icons :as icons]
-            [quo.core :as quo]
             [status-im.ui.components.common.styles :as components.common.styles]
             [status-im.ui.components.toolbar :as toolbar]
             [clojure.string :as string]
@@ -99,11 +98,6 @@
   ^{:key word}
   [react/view {:flex 1}
    [react/view {:style styles/enter-word-container}
-    [react/view {:style styles/enter-word-row}
-     [react/text {:style styles/enter-word-label}
-      (i18n/label :t/check-your-recovery-phrase)]
-     [react/text {:style styles/enter-word-n}
-      (i18n/label :t/word-n {:number (inc idx)})]]
     [quo/text-input
      {:placeholder       (i18n/label :t/enter-word)
       :label             [:<>

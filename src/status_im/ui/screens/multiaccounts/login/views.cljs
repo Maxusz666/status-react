@@ -14,8 +14,7 @@
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.components.colors :as colors]
-            [quo.core :as quo])
+            [status-im.ui.components.colors :as colors])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn login-multiaccount [^js password-text-input]

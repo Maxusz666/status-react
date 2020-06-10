@@ -11,7 +11,6 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.add-new.new-chat.styles :as styles]
             [status-im.utils.debounce :as debounce]
-            [quo.core :as quo]
             [status-im.utils.utils :as utils])
   (:require-macros [status-im.utils.views :as views]))
 

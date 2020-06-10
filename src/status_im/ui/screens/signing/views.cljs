@@ -4,7 +4,6 @@
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.colors :as colors]
-            [quo.core :as quo]
             [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.wallet.utils :as wallet.utils]
             [status-im.ui.components.list.views :as list]

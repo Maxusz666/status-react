@@ -9,7 +9,6 @@
             [cljs.spec.alpha :as spec]
             [status-im.multiaccounts.db :as multiaccounts.db]
             [status-im.ui.components.toolbar :as toolbar]
-            [quo.core :as quo]
             [status-im.ui.components.topbar :as topbar]
             [status-im.utils.utils :as utils.utils]
             [status-im.ui.components.icons.vector-icons :as icons]

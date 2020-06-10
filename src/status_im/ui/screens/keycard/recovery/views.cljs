@@ -6,7 +6,6 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.colors :as colors]
-            [quo.core :as quo]
             [status-im.ui.components.toolbar :as bottom-toolbar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.tooltip.views :as tooltip]

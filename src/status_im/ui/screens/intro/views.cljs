@@ -7,7 +7,6 @@
             [status-im.privacy-policy.core :as privacy-policy]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.colors :as colors]
-            [quo.core :as quo]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.radio :as radio]
             [status-im.ui.components.react :as react]

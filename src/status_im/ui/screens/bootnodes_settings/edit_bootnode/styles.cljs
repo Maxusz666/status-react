@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.bootnodes-settings.edit-bootnode.styles
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.styles :as components.styles]
             [status-im.utils.styles :as styles]))
 
 (def edit-bootnode-view

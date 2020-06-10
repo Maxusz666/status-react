@@ -50,7 +50,7 @@
         master-state         (animated/use-value (:undetermined gesture-handler/states))
         tap-state            (animated/use-value 0)
         manual-open          (animated/use-value 0)
-        manual-close         (animated/value 0)
+        manual-close         (animated/use-value 0)
         offset               (animated/use-value 0)
         clock                (animated/use-clock)
         body-ref             (react/create-ref)
