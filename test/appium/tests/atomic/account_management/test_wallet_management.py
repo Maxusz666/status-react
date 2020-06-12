@@ -303,7 +303,7 @@ class TestWalletManagement(SingleDeviceTestCase):
             self.driver.fail('Account was not added')
 
         wallet_view.just_fyi('Check that overall balance is changed after adding watch-only account')
-        for asset in ('ETHro', 'ADI', 'STT'):
+        for asset in ('ETH', 'ADI', 'STT'):
             wallet_view.wait_balance_is_changed(asset)
 
         wallet_view.just_fyi('Check individual watch-only account view, settings and receive option')
@@ -360,7 +360,7 @@ class TestWalletManagement(SingleDeviceTestCase):
             self.driver.fail('Account was not added')
 
         wallet_view.just_fyi('Check that overall balance is changed after adding account')
-        for asset in ('ETHro', 'ADI'):
+        for asset in ('ETH', 'ADI'):
             wallet_view.wait_balance_is_changed(asset)
 
         wallet_view.just_fyi('Check account view and send option')
