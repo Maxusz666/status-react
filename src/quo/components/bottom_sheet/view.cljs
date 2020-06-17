@@ -21,7 +21,9 @@
 ;; NOTE(Ferossgp): RNGH does not work in modal react native
 (defn modal [{:keys [visible] :as props} & children]
   (if platform/android?
-    (when visible (into [:<>] children))
+    (into [rn/view {:style          styles/container
+                    :pointer-events (if visible :box-none :none)}]
+          children)
     (into [rn/modal props] children)))
 
 (defn bottom-sheet-hooks [props]
@@ -199,13 +201,19 @@
           [animated/scroll-view {:bounces        false
                                  :flex           1
                                  :scroll-enabled (= sheet-height max-height)}
-           [animated/view {:style     {:padding-top    styles/vertical-padding
-                                       :padding-bottom (+ styles/vertical-padding
-                                                          (if (and platform/ios? keyboard-shown)
-                                                            keyboard-height
-                                                            (:bottom safe-area)))}
+           [animated/view {:style     (merge
+                                       (when (and platform/android? (not @visible))
+                                         ;; NOTE(Ferossgp): Remove when RNGH will support modals,
+                                         ;; now need to trigger on-layout when closed
+                                         {:height 0})
+                                       {:padding-top    styles/vertical-padding
+                                        :padding-bottom (+ styles/vertical-padding
+                                                           (if (and platform/ios? keyboard-shown)
+                                                             keyboard-height
+                                                             (:bottom safe-area)))})
                            :on-layout on-layout}
-            (into [:<>] (react/get-children children))]]]]]]])))
+            (into [:<>]
+                  (react/get-children children))]]]]]]])))
 
 (def bottom-sheet-adapted (reagent/adapt-react-class bottom-sheet-hooks))
 
