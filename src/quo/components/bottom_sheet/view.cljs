@@ -24,7 +24,7 @@
     (when visible (into [:<>] children))
     (into [rn/modal props] children)))
 
-(defn bottom-sheet-raw [props]
+(defn bottom-sheet-hooks [props]
   (let [{on-cancel          :onCancel
          disable-drag?      :disableDrag?
          show-handle?       :showHandle?
@@ -37,12 +37,14 @@
                              back-button-cancel true}}
         (bean/bean props)
 
+        {:keys [on-layout height]}
+        (rn/use-layout)
         {window-height :height} (rn/use-window-dimensions)
         {:keys [keyboard-shown keyboard-height]}
         (rn/use-keyboard)
         safe-area               (safe-area/use-safe-area)
+        min-height              (+ (* styles/vertical-padding 2) (:bottom safe-area))
         max-height              (- window-height (:top safe-area) styles/margin-top)
-        content-height          (react/state 0)
         visible                 (react/state false)
 
         master-translation-y (animated/use-value 0)
@@ -61,7 +63,8 @@
                                                 :state        master-state
                                                 :velocityY    master-velocity-y}}])
         on-body-event        on-master-event
-        sheet-height         (min max-height @content-height)
+        sheet-height         (min max-height
+                                  (+ styles/border-radius height))
         open-snap-point      (* -1 sheet-height)
         close-snap-point     0
         on-close             (fn []
@@ -70,8 +73,6 @@
                                  (when on-cancel (on-cancel))))
         close-sheet          (fn []
                                (animated/set-value manual-close 1))
-        open-sheet           (fn []
-                               (animated/set-value manual-open 1))
         on-snap              (fn [pos]
                                (when (= close-snap-point (aget pos 0))
                                  (on-close)))
@@ -88,47 +89,44 @@
                                 :on-snap     on-snap
                                 :snap-points [open-snap-point close-snap-point]})
         opacity              (animated/cond*
-                              open-snap-point
+                              height
                               (animated/interpolate
                                translate-y
                                {:inputRange  [(animated/multiply open-snap-point opacity-coeff) 0]
                                 :outputRange [1 0]
-                                :extrapolate (:clamp animated/extrapolate)}))
-        on-layout            (fn [evt]
-                               (->> ^js evt
-                                    .-nativeEvent
-                                    .-layout
-                                    .-height
-                                    (+ styles/border-radius)
-                                    (reset! content-height))
-                               (when visible?
-                                 (js/requestAnimationFrame open-sheet)))]
+                                :extrapolate (:clamp animated/extrapolate)}))]
     (animated/code!
      (fn []
        (animated/block
-        [(animated/cond* (animated/and* interrupted manual-open)
+        [(animated/call* [manual-open interrupted manual-close] println)
+         (animated/cond* (animated/and* interrupted manual-open)
                          [(animated/set manual-open 0)
                           (animated/set offset open-snap-point)
                           (animated/stop-clock clock)])
          (animated/cond* (animated/and* manual-open
                                         (animated/not* manual-close))
-                         [(animated/set offset
+                         [(animated/call* [offset (animated/clock-running clock)] #(println "PFF2" % open-snap-point))
+                          (animated/set offset
                                         (animated/re-spring {:from   offset
                                                              :to     open-snap-point
                                                              :clock  clock
                                                              :config spring-config}))
                           (animated/cond* (animated/not* (animated/clock-running clock))
                                           (animated/set manual-open 0))])]))
-     [open-snap-point])
+     [height])
     (animated/code!
      (fn []
        (animated/block
-        [(animated/on-change tap-state
-                             [(animated/cond* (animated/eq tap-state (:end gesture-handler/states))
-                                              [(animated/cond* (animated/and* (animated/not* manual-open)
-                                                                              (animated/not* manual-close))
-                                                               (animated/set manual-close 1))
-                                               (animated/set tap-state (:undetermined gesture-handler/states))])])
+        [(animated/cond* (animated/and* interrupted manual-close)
+                         [(animated/set manual-close 0)
+                          (animated/set offset close-snap-point)
+                          (animated/call* [] on-close)
+                          (animated/stop-clock clock)])
+         (animated/cond* (animated/eq tap-state (:end gesture-handler/states))
+                         [(animated/cond* (animated/and* (animated/not* manual-close))
+                                          [(animated/stop-clock clock)
+                                           (animated/set manual-close 1)])
+                          (animated/set tap-state (:undetermined gesture-handler/states))])
          (animated/cond* manual-close
                          [(animated/set offset
                                         (animated/re-timing {:from     offset
@@ -140,7 +138,15 @@
                                           [(animated/set manual-close 0)
                                            (animated/set manual-open 0)
                                            (animated/call* [] on-close)])])]))
-     [on-close])
+     [on-cancel])
+    (animated/code!
+     (fn []
+       (when (and (> height min-height)
+                  @visible)
+         (animated/block
+          [(animated/stop-clock clock)
+           (animated/set manual-open 1)])))
+     [height @visible])
     ;; NOTE(Ferossgp): Remove me when RNGH will suport modal
     (rn/use-back-handler
      (fn []
@@ -190,7 +196,7 @@
                                                                          (not= sheet-height max-height))
                                               :onGestureEvent       on-body-event
                                               :onHandlerStateChange on-body-event}
-         [animated/view {:height sheet-height}
+         [animated/view {:height height}
           [animated/scroll-view {:bounces        false
                                  :flex           1
                                  :scroll-enabled (= sheet-height max-height)}
@@ -202,5 +208,7 @@
                            :on-layout on-layout}
             (into [:<>] (react/get-children children))]]]]]]])))
 
+(def bottom-sheet-adapted (reagent/adapt-react-class bottom-sheet-hooks))
+
 (defn bottom-sheet [props & children]
-  (into [:> bottom-sheet-raw props] children))
+  (into [bottom-sheet-adapted props] children))
