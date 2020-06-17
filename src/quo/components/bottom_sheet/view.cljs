@@ -70,7 +70,8 @@
         on-close             (fn []
                                (when @visible
                                  (reset! visible false)
-                                 (when on-cancel (on-cancel))))
+                                 (when (and visible? on-cancel)
+                                   (on-cancel))))
         close-sheet          (fn []
                                (animated/set-value manual-close 1))
         on-snap              (fn [pos]
@@ -98,15 +99,13 @@
     (animated/code!
      (fn []
        (animated/block
-        [(animated/call* [manual-open interrupted manual-close] println)
-         (animated/cond* (animated/and* interrupted manual-open)
+        [(animated/cond* (animated/and* interrupted manual-open)
                          [(animated/set manual-open 0)
                           (animated/set offset open-snap-point)
                           (animated/stop-clock clock)])
          (animated/cond* (animated/and* manual-open
                                         (animated/not* manual-close))
-                         [(animated/call* [offset (animated/clock-running clock)] #(println "PFF2" % open-snap-point))
-                          (animated/set offset
+                         [(animated/set offset
                                         (animated/re-spring {:from   offset
                                                              :to     open-snap-point
                                                              :clock  clock
