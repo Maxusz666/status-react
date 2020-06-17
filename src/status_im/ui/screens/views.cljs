@@ -53,7 +53,7 @@
             (merge about-app/learn-more)
 
             (= view :recover-sheet)
-            (merge (recover.views/bottom-sheet)))]
+            (merge recover.views/bottom-sheet))]
       [quo/bottom-sheet opts
        (when content
          [content])])))

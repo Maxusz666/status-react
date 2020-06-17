@@ -73,5 +73,5 @@
                                             :style  {:width 24 :height 24}}]]
         :on-press            #(hide-sheet-and-dispatch [::hardwallet/recover-with-keycard-pressed])}])]])
 
-(defn bottom-sheet []
+(def bottom-sheet
   {:content bottom-sheet-view})
