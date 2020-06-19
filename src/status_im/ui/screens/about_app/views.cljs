@@ -38,7 +38,7 @@
         {:size                :small
          :accessibility-label :node-version
          :title               (i18n/label :t/node-version)
-         :acccessory          :text
+         :accessory          :text
          :accessory-text      node-version}]]]]))
 
 (views/defview learn-more-sheet []

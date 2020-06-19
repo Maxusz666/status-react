@@ -215,7 +215,4 @@
             (into [:<>]
                   (react/get-children children))]]]]]]])))
 
-(def bottom-sheet-adapted (reagent/adapt-react-class bottom-sheet-hooks))
-
-(defn bottom-sheet [props & children]
-  (into [bottom-sheet-adapted props] children))
+(def bottom-sheet (reagent/adapt-react-class (react/memo bottom-sheet-hooks)))

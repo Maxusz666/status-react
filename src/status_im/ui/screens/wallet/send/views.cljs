@@ -68,15 +68,17 @@
                                       :content-height 300}]))}])
 
 (defn render-contact [contact from-chat?]
+  (println contact)
   (if from-chat?
     [quo/list-item {:title    (multiaccounts/displayed-name contact)
                     :subtitle (:address contact)
                     :icon     [chat-icon/contact-icon-contacts-tab
                                (multiaccounts/displayed-photo contact)]}]
     [quo/list-item
-     {:title               (utils/get-shortened-checksum-address
-                            (if (string? contact) contact (:address contact)))
-      :subtitle            (when-not contact (i18n/label :t/wallet-choose-recipient))
+     {:title               (if-not contact
+                             (i18n/label :t/wallet-choose-recipient)
+                             (utils/get-shortened-checksum-address
+                              (if (string? contact) contact (:address contact))))
       :accessibility-label :choose-recipient-button
       :on-press            #(do
                               (re-frame/dispatch [:dismiss-keyboard])

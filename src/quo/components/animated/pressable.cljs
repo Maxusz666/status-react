@@ -110,7 +110,7 @@
        [gesture-handler/tap-gesture-handler
         (merge gesture-handler
                {:shouldCancelWhenOutside true
-                ;; :wait-for                long-press-ref
+                :wait-for                long-press-ref
                 :enabled                 (and (or on-press on-long-press on-press-start)
                                               (not disabled))})
         [animated/view
@@ -121,4 +121,4 @@
          (into [animated/view {:style foreground}]
                (react/get-children children))]]]])))
 
-(def pressable (reagent/adapt-react-class pressable-hooks))
+(def pressable (reagent/adapt-react-class (react/memo pressable-hooks)))
