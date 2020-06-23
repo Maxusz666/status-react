@@ -1150,5 +1150,6 @@
     "system": "System",
     "give-permissions-camera": "Give permission\nto access camera",
     "photos": "Photos",
-    "image": "Image"
+    "image": "Image",
+    "not-enough-snt": "Not enough SNT"
 }
