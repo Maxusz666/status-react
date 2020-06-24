@@ -3,7 +3,27 @@
             [status-im.utils.fx :as fx]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.waku.core :as waku]
-            [status-im.utils.types :as types]))
+            [status-im.utils.types :as types]
+            [status-im.platform :as platform]
+            ["react-native-device-info" :refer [getInstallReferrer]]))
+
+(re-frame/reg-fx
+ ::get-referrer
+ (fn []
+   (when platform/android?
+     (-> (getInstallReferrer)
+         (.then (fn [referrer]
+                  (re-frame/dispatch [::set-referrer referrer])))))))
+
+(fx/defn set-referrer
+  {:events [::set-referrer]}
+  [{:keys [db]} referrer]
+  {:db (assoc-in db [:acquisition :install-referrer] referrer)})
+
+(fx/defn handle-app-setup
+  {}
+  []
+  {::get-referrer nil})
 
 (fx/defn handle-error
   {:events [::on-error]}

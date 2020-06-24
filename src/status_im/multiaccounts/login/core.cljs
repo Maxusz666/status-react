@@ -30,6 +30,7 @@
             [status-im.utils.utils :as utils]
             [status-im.wallet.core :as wallet]
             [status-im.wallet.prices :as prices]
+            [status-im.acquisition.core :as acquisition]
             [taoensso.timbre :as log]))
 
 (defn fetch-nodes [_ resolve _]
@@ -266,7 +267,11 @@
 (fx/defn multiaccount-login-success
   [{:keys [db now] :as cofx}]
   (let [{:keys [key-uid password save-password? creating?]} (:multiaccounts/login db)
+        multiaccounts                                       (:multiaccounts/multiaccounts db)
         recovering?                                         (get-in db [:intro-wizard :recovering?])
+        first-account?                                      (and creating?
+                                                                 (not recovering?)
+                                                                 (empty? multiaccounts))
         login-only?                                         (not (or creating?
                                                                      recovering?
                                                                      (keycard-setup? cofx)))
@@ -292,6 +297,8 @@
               (if login-only?
                 (login-only-events key-uid password save-password?)
                 (create-only-events))
+              (when first-account?
+                (acquisition/app-setup))
               (when recovering?
                 (navigation/navigate-to-cofx :tabs {:screen :chat-stack
                                                     :params {:screen :home}})))))

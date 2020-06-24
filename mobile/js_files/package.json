@@ -35,6 +35,7 @@
     "react-native-camera": "^3.3.3",
     "react-native-config": "git+https://github.com/status-im/react-native-config.git#v0.11.2-3-status",
     "react-native-dark-mode": "^0.2.2",
+    "react-native-device-info": "^5.6.1",
     "react-native-dialogs": "^1.0.4",
     "react-native-fetch-polyfill": "^1.1.2",
     "react-native-fs": "^2.14.1",
