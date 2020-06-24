@@ -104,6 +104,29 @@ def build_ios_adhoc(readonly)
   )
 end
 
+# builds an ios pr app with ad-hoc configuration and put it
+# to "status-pr-adhoc" output folder
+# `readonly`:
+#    if true  - only fetch existing certificates and profiles, don't upgrade from AppStoreConnect
+#    if false - read list of devices from AppStoreConnect, and upgrade the provisioning profiles from it
+def build_ios_pr_adhoc(readonly)
+  match(
+    type: 'adhoc',
+    force_for_new_devices: true,
+    readonly: readonly,
+    keychain_name: 'login.keychain'
+  )
+
+  build_ios_app(
+    scheme: 'StatusImPR',
+    workspace: 'ios/StatusIm.xcworkspace',
+    configuration: 'Release',
+    clean: true,
+    export_method: 'ad-hoc',
+    output_directory: 'status-adhoc'
+  )
+end
+
 # builds an ios app with e2e configuration and put it
 # to "status-e2e" output folder
 def build_ios_e2e
@@ -180,7 +203,7 @@ platform :ios do
   desc 'This lane builds a new adhoc build and leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)'
   lane :pr do
     unlock_keychain_if_needed
-    build_ios_adhoc(false)
+    build_ios_pr_adhoc(false)
   end
 
   desc '`fastlane ios nightly` - makes a new nightly'
