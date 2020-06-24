@@ -6,6 +6,7 @@
             [status-im.ethereum.contracts :as contracts]
             [status-im.ethereum.core :as ethereum]
             [status-im.ui.components.react :as react]
+            [status-im.navigation :as navigation]
             [status-im.acquisition.core :as acquisition]))
 
 (def get-link "get.status.im")
@@ -42,7 +43,7 @@
  ::get-rewards
  (fn [accounts]
    (doseq [{:keys [contract address on-success]} accounts]
-    (get-reward contract address on-success))))
+     (get-reward contract address on-success))))
 
 (fx/defn default-reward-success
   {:events [::default-reward-success]}
@@ -72,16 +73,17 @@
    (re-frame/dispatch [::get-default-reward])
    (make-reaction
     (fn []
-     (get-in @db [:acquisition :referral :amount])))))
+      (get-in @db [:acquisition :referral :amount])))))
 
-
-(fx/defn get-accounts-reward
-  {:events [::get-accounts-reward]}
-  [{:keys [db]}]
+(fx/defn go-to-invite
+  {:events [::open-invite]}
+  [{:keys [db] :as cofx}]
   (let [contract (contracts/get-address db :status/acquisition)
         accounts (filter #(not= (:type %) :watch) (get db :multiaccount/accounts))]
-    {::get-rewards (mapv (fn [{:keys [address]}]
-                           {:address    address
-                            :contract   contract
-                            :on-success #(re-frame/dispatch [::get-reward-success address %])})
-                         accounts)}))
+    (fx/merge cofx
+              {::get-rewards (mapv (fn [{:keys [address]}]
+                                     {:address    address
+                                      :contract   contract
+                                      :on-success #(re-frame/dispatch [::get-reward-success address %])})
+                                   accounts)}
+              (navigation/navigate-to-cofx :referral-invite nil))))

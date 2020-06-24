@@ -13,6 +13,7 @@
             [status-im.utils.money :as money]
             [quo.design-system.spacing :as spacing]
             [quo.design-system.colors :as colors]
+            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.invite.events :as events]
             [quo.react-native :as rn]))
 
@@ -21,15 +22,15 @@
   (fn [account]
     (let [{:keys [max-threshold attrib-count]}
           @(re-frame/subscribe [:invite/account-reward account])]
-     [list-item/list-item
-      {:theme     :selectable
-       :selected? (= (:address current-account) (:address account))
-       :disabled? (and max-threshold attrib-count
-                       (< max-threshold (inc attrib-count)))
-       :icon      [chat-icon/custom-icon-view-list (:name account) (:color account)]
-       :title     (:name account)
-       :subtitle  (utils/get-shortened-checksum-address (:address account))
-       :on-press  #(change-account account)}])))
+      [list-item/list-item
+       {:theme     :selectable
+        :selected? (= (:address current-account) (:address account))
+        :disabled? (and max-threshold attrib-count
+                        (< max-threshold (inc attrib-count)))
+        :icon      [chat-icon/custom-icon-view-list (:name account) (:color account)]
+        :title     (:name account)
+        :subtitle  (utils/get-shortened-checksum-address (:address account))
+        :on-press  #(change-account account)}])))
 
 (defn- accounts-list [accounts current-account change-account]
   (fn []
@@ -110,44 +111,33 @@
          :subtitle (utils/get-shortened-checksum-address (:address account))
          :on-press #(reset! visible true)}]])))
 
-(defn- referral-sheet []
+(defn referral-invite []
   (let [account* (reagent/atom nil)]
     (fn []
       (let [accounts        @(re-frame/subscribe [:accounts-without-watch-only])
             default-account @(re-frame/subscribe [:multiaccount/default-account])
             account         (or @account* default-account)]
         [rn/view {:flex 1}
-         [referral-steps]
-         [referral-account {:account        account
-                            :change-account #(reset! account* %)
-                            :accounts       accounts}]
+         [topbar/topbar {:modal?       true
+                         :show-border? true
+                         :title        (i18n/label :t/invite-friends)}]
+         [rn/scroll-view {:flex 1}
+          [referral-steps]
+          [referral-account {:account        account
+                             :change-account #(reset! account* %)
+                             :accounts       accounts}]]
          [toolbar/toolbar {:show-border? true
                            :center       {:label    (i18n/label :t/invite-button)
                                           :type     :secondary
                                           :on-press #(re-frame/dispatch [::events/generate-invite
                                                                          {:address (get account :address)}])}}]]))))
 
-(defn- invite []
-  (let [visible  (reagent/atom false)
-        on-press (fn []
-                   (reset! visible true)
-                   (re-frame/dispatch [::events/get-accounts-reward]))]
-    (fn [{:keys [component props]}]
-      [:<>
-       [rn/modal {:visible     @visible
-                  :transparent true}
-        [bottom-sheet/bottom-sheet {:show?     true
-                                    :on-cancel #(reset! visible false)
-                                    :content   referral-sheet}]]
-       [component {:on-press on-press
-                   :props    props}]])))
-
-(defn- button-component [{:keys [on-press]}]
+(defn button []
   (let [amount @(re-frame/subscribe [::events/default-reward])]
     [rn/view {:style {:align-items :center}}
      [rn/view {:style (:tiny spacing/padding-vertical)}
       [button/button {:label               :t/invite-friends
-                      :on-press            on-press
+                      :on-press            #(re-frame/dispatch [::events/open-invite])
                       :accessibility-label :invite-friends-button}]]
      [rn/view {:style (merge (:tiny spacing/padding-vertical)
                              (:base spacing/padding-horizontal))}
@@ -163,19 +153,18 @@
          [quo/text {:align :center}
           (i18n/label :t/invite-reward {:value (money/wei->str :eth (* 1000000000000000 amount) "SNT")})]])]]))
 
-(defn- list-item-component [{:keys [on-press props]}]
+(defn list-item [{:keys [accessibility-label]}]
   (let [amount @(re-frame/subscribe [::events/default-reward])]
     [list-item/list-item
      {:theme               :action
       :title               (i18n/label :t/invite-friends)
       :subtitle            (i18n/label :t/invite-reward {:value (money/wei->str :eth amount "SNT")})
       :icon                :main-icons/share
-      :accessibility-label (:accessibility-label props)
-      :on-press            on-press}]))
+      :accessibility-label accessibility-label
+      :on-press            #(do
+                              (re-frame/dispatch [:bottom-sheet/hide])
+                              (re-frame/dispatch [::events/open-invite]))}]))
 
-(defn button []
-  [invite {:component button-component}])
 
-(defn list-item [props]
-  [invite {:component list-item-component
-           :props     props}])
+
+
