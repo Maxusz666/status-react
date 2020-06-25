@@ -6,7 +6,7 @@
             [quo.previews.button :as button]
             [quo.previews.lists :as lists]
             [quo.previews.bottom-sheet :as bottom-sheet]
-            [quo.previews.switch :as switch]
+            [quo.previews.controls :as controls]
             [quo.react-native :as rn]
             [quo.core :as quo]
             [reagent.core :as reagent]
@@ -35,9 +35,9 @@
               {:name      :bottom-sheet
                :insets    {:top false}
                :component bottom-sheet/preview}
-              {:name      :switch
+              {:name      :controls
                :insets    {:top false}
-               :component switch/preview}])
+               :component controls/preview}])
 
 (defn theme-switcher []
   [rn/view {:style {:flex-direction   :row
